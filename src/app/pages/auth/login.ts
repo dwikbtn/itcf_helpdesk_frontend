@@ -38,10 +38,11 @@ import { AuthContainer } from './components/AuthContainer';
                 <p-password id="password" formControlName="password" placeholder="Password" [toggleMask]="true" styleClass="mb-2 w-full" [fluid]="true" [feedback]="false" (onKeydownEnter)="onSubmit()"> </p-password>
                 <p-message *ngIf="submitted && f.password.errors?.['required']" severity="error" variant="simple" size="small"> Password wajib diisi </p-message>
 
-                <!-- Remember me (opsional) -->
-                <div class="flex items-center justify-between mt-4 mb-8 gap-8" (click)="onForgotPassword()">
+                <!-- Forgot password -->
+                <!-- NOTE: Hide forgot password -->
+                <!-- <div class="flex items-center justify-between mt-4 mb-8 gap-8" (click)="onForgotPassword()">
                     <span class="font-medium no-underline ml-auto text-right cursor-pointer text-primary">Forgot password?</span>
-                </div>
+                </div> -->
 
                 <button pButton type="submit" class="w-full" [label]="loading ? 'Signing in…' : 'Sign In'" [disabled]="loading"></button>
             </form>

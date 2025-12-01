@@ -30,7 +30,7 @@ import { InputTextModule } from 'primeng/inputtext';
             <!-- Remember me (opsional) -->
             <div class="flex items-center justify-between mt-4 mb-8 gap-8"></div>
             <!-- button  -->
-            <button pButton type="submit" class="w-full" [label]="loading ? 'Signing in…' : 'Sign In'" [disabled]="loading"></button>
+            <button pButton type="submit" class="w-full" [label]="loading ? 'Forgotting…' : 'Forgot Password'" [disabled]="loading"></button>
         </app-auth-container>
     `,
     imports: [AppFloatingConfigurator, ToastModule, AuthContainer, Message, CommonModule, ButtonModule, InputTextModule]
