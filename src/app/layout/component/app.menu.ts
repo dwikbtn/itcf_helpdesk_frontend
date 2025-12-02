@@ -24,7 +24,7 @@ export class AppMenu {
                 label: 'Menu',
                 items: [
                     { label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/'] },
-                    { label: 'Ticket List', icon: 'pi pi-fw pi-list', routerLink: ['/ticket-list'] }
+                    { label: 'Ticket List', icon: 'pi pi-fw pi-list', routerLink: ['/ticket'] }
                 ]
             }
 
