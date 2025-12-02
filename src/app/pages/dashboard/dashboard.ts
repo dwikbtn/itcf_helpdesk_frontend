@@ -1,25 +1,156 @@
 import { Component } from '@angular/core';
-import { NotificationsWidget } from './components/notificationswidget';
-import { StatsWidget } from './components/statswidget';
-import { RecentSalesWidget } from './components/recentsaleswidget';
-import { BestSellingWidget } from './components/bestsellingwidget';
-import { RevenueStreamWidget } from './components/revenuestreamwidget';
-
+import { Fluid } from 'primeng/fluid';
+import { ChartModule } from 'primeng/chart';
+import { TotalTicketCard } from './components/totalTicketCard';
 @Component({
     selector: 'app-dashboard',
-    imports: [StatsWidget, RecentSalesWidget, BestSellingWidget, RevenueStreamWidget, NotificationsWidget],
+    imports: [Fluid, ChartModule, TotalTicketCard],
     template: `
-        <div class="grid grid-cols-12 gap-8">
-            <app-stats-widget class="contents" />
-            <div class="col-span-12 xl:col-span-6">
-                <app-recent-sales-widget />
-                <app-best-selling-widget />
+        <section class="mb-4">
+            <div class="text-3xl font-bold mb-2">Dashboard</div>
+            <div class="text-lg text-surface-500 mb-4">Welcome to the ITCF Ticketing System Dashboard</div>
+
+            <!-- chart section -->
+            <p-fluid class="grid grid-cols-12 gap-8 mb-4 p-fluid">
+                <div class="col-span-12 xl:col-span-6">
+                    <div class="card flex flex-col" style="height:420px">
+                        <div class="font-semibold text-xl mb-4">Monthly Ticket Overview</div>
+                        <div class="flex-1">
+                            <p-chart type="bar" [data]="monthlyData" [options]="monthlyOptions" style="height:100%"></p-chart>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-span-12 xl:col-span-6">
+                    <div class="card flex flex-col" style="height:420px">
+                        <div class="font-semibold text-xl mb-4">Tickets by Status</div>
+                        <div class="flex-1">
+                            <p-chart type="doughnut" [data]="ticketStatusData" [options]="ticketStatusOptions" style="height:100%"></p-chart>
+                        </div>
+                    </div>
+                </div>
+            </p-fluid>
+
+            <!--card section -->
+            <!-- total tickets card -->
+            <div class="grid grid-cols-12 gap-8">
+                <!-- total on progress tickets card -->
+                <app-total-ticket-card dataValue="8" dataLabel="Open Tickets" icon="pi pi-exclamation-circle" iconColor="#EF6C00"></app-total-ticket-card>
+                <app-total-ticket-card dataValue="5" dataLabel="On Progress Tickets" icon="pi pi-spinner" iconColor="#3B82F6"></app-total-ticket-card>
+                <app-total-ticket-card dataValue="12" dataLabel="Closed Tickets" icon="pi pi-check-circle" iconColor="#10B981"></app-total-ticket-card>
             </div>
-            <div class="col-span-12 xl:col-span-6">
-                <app-revenue-stream-widget />
-                <app-notifications-widget />
+
+            <div class=" w-full flex justify-end hover:cursor-pointer mt-4 text-primary-600 font-semibold">
+                <p>Go to Ticket Page →</p>
             </div>
-        </div>
+        </section>
     `
 })
-export class Dashboard {}
+export class Dashboard {
+    monthlyData = {};
+    monthlyOptions = {};
+
+    ticketStatusData = {};
+    ticketStatusOptions = {};
+
+    ngOnInit() {
+        this.initCharts();
+    }
+
+    initCharts() {
+        const documentStyle = getComputedStyle(document.documentElement);
+        const textColor = documentStyle.getPropertyValue('--text-color');
+        const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
+        const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
+
+        this.monthlyData = {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+            datasets: [
+                {
+                    label: 'Open',
+                    backgroundColor: '#FECACA',
+                    borderColor: '#FECACA',
+                    data: [10, 9, 8, 7, 6, 5, 4]
+                },
+                {
+                    label: 'On Progress',
+                    backgroundColor: '#BAE6FD',
+                    borderColor: '#BAE6FD',
+                    data: [2, 4, 6, 8, 10, 12, 14]
+                },
+                {
+                    label: 'Closed',
+                    backgroundColor: '#BBF7D0',
+                    borderColor: '#BBF7D0',
+                    data: [12, 14, 16, 18, 20, 22, 24]
+                }
+            ]
+        };
+
+        this.monthlyOptions = {
+            maintainAspectRatio: false,
+            aspectRatio: 0.8,
+            layout: {
+                padding: {
+                    bottom: 24
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        color: textColor
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        color: textColorSecondary,
+                        font: {
+                            weight: 500,
+                            size: 12
+                        },
+                        autoSkip: true,
+                        maxRotation: 0,
+                        minRotation: 0
+                    },
+                    grid: {
+                        display: false,
+                        drawBorder: false
+                    }
+                },
+                y: {
+                    ticks: {
+                        color: textColorSecondary
+                    },
+                    grid: {
+                        color: surfaceBorder,
+                        drawBorder: false
+                    }
+                }
+            }
+        };
+
+        this.ticketStatusData = {
+            labels: ['Open', 'On Progress', 'Closed'],
+            datasets: [
+                {
+                    data: [8, 5, 12],
+                    backgroundColor: ['#FECACA', '#BAE6FD', '#BBF7D0'],
+                    hoverBackgroundColor: ['#FCA5A5', '#7DD3FC', '#86EFAC']
+                }
+            ]
+        };
+
+        this.ticketStatusOptions = {
+            maintainAspectRatio: false,
+            aspectRatio: 1,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: textColor
+                    }
+                }
+            }
+        };
+    }
+}
