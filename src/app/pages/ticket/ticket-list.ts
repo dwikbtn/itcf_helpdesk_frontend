@@ -5,7 +5,11 @@ import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { Popover } from 'primeng/popover';
 import { InputTextModule } from 'primeng/inputtext';
-import { TicketStatusTab } from './components/ticketStatusTab';
+import { Filter } from './components/filter';
+import { TicketStatusTab } from './components/ticket-status-tab';
+import { ActivatedRoute } from '@angular/router';
+import { NewTicket } from './new-ticket';
+
 interface Ticket {
     id: string;
     title: string;
@@ -19,11 +23,11 @@ interface Ticket {
 @Component({
     selector: 'app-ticket-list',
     standalone: true,
-    imports: [CommonModule, RouterModule, TableModule, ButtonModule, Popover, InputTextModule, TicketStatusTab],
+    imports: [CommonModule, RouterModule, TableModule, ButtonModule, Popover, InputTextModule, TicketStatusTab, Filter, NewTicket],
     template: `
         <section class="p-4">
             <div class="text-3xl font-bold mb-4">Ticket List</div>
-
+            <button pButton type="button" label="New Ticket" icon="pi pi-plus" (click)="showVisible()"></button>
             <div class="toolbar flex items-center justify-between mb-4">
                 <ticket-status-tab [selectedTab]="selectedTab" [totalCount]="totalCount" [openedCount]="openedCount" [inProgressCount]="inProgressCount" [closedCount]="closedCount" (tabSelected)="selectTab($event)"></ticket-status-tab>
 
@@ -34,8 +38,18 @@ interface Ticket {
                     </div>
 
                     <button pButton type="button" class="p-button-outlined filter-button" [class.active-filter]="selectedPriorities.size > 0" aria-label="Filter" (click)="toggleFilter($event)"><i class="pi pi-filter"></i></button>
-                    <button pButton type="button" class="p-button-outlined" aria-label="Sort"><i class="pi pi-sort"></i></button>
+                    <button pButton type="button" class="p-button-outlined" [class.sort-active]="sortOrder !== 'none'" aria-label="Sort" (click)="toggleSort()">
+                        <i class="pi" [ngClass]="sortOrder === 'asc' ? 'pi-sort-alt-up' : sortOrder === 'desc' ? 'pi-sort-alt-down' : 'pi-sort'"></i>
+                    </button>
 
+                    <app-filter
+                        *ngIf="showFilter"
+                        [showFilter]="showFilter"
+                        [selectedPriorities]="selectedPriorities"
+                        (togglePriorityEvent)="togglePriority($event.priority, $event.event)"
+                        (applyFilterEvent)="applyFilter()"
+                        (clearFilterEvent)="clearFilter()"
+                    ></app-filter>
                     <div *ngIf="showFilter" class="filter-popover" (click)="$event.stopPropagation()">
                         <div class="filter-section">
                             <div class="filter-title">Priority</div>
@@ -98,129 +112,16 @@ interface Ticket {
                 </ng-template>
             </p-table>
         </section>
+        <!-- create ticket modal here -->
+        <app-new-ticket [visible]="visible" (visibleChange)="visible = $event" />
     `,
-    styles: [
-        `
-            :host {
-                display: block;
-            }
-            .priority-badge {
-                display: inline-block;
-                padding: 0.25rem 0.5rem;
-                border-radius: 9999px;
-                font-weight: 600;
-                font-size: 0.75rem;
-                color: #fff;
-            }
-            .priority-high {
-                background: #10b981;
-            } /* green */
-            .priority-medium {
-                background: #3b82f6;
-            } /* blue */
-            .priority-low {
-                background: #6b7280;
-            } /* gray */
-
-            .status-badge {
-                display: inline-block;
-                padding: 0.2rem 0.5rem;
-                border-radius: 9999px;
-                font-weight: 600;
-                font-size: 0.7rem;
-                color: #fff;
-                text-transform: capitalize;
-            }
-            .status-open {
-                background: #059669;
-            } /* emerald */
-            .status-in-progress {
-                background: #f59e0b;
-            } /* amber */
-            .status-closed {
-                background: #6b7280;
-            } /* gray */
-
-            .action-btn {
-                background: #fff;
-                border: 1px solid #e6edf3;
-                padding: 0.5rem 0.75rem;
-                border-radius: 0.5rem;
-                cursor: pointer;
-                min-width: 120px;
-                text-align: left;
-            }
-            .action-btn.danger {
-                color: #dc2626;
-            }
-            .p-datatable .p-datatable-tbody > tr > td {
-                vertical-align: middle;
-            }
-            .tabs .tab {
-                background: transparent;
-                border: 1px solid transparent;
-                padding: 0.4rem 0.75rem;
-                border-radius: 9999px;
-                font-weight: 600;
-                color: #374151;
-                cursor: pointer;
-            }
-            .tabs .tab .count {
-                color: #6b7280;
-                font-weight: 500;
-                margin-left: 6px;
-            }
-            .tabs .tab.active {
-                background: #ffffff;
-                border-color: #e5e7eb;
-                box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
-            }
-            .search-wrapper {
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                background: #fff;
-                padding: 0.25rem 0.5rem;
-                border-radius: 0.5rem;
-                border: 1px solid #e6edf3;
-            }
-            .search-wrapper input {
-                border: none;
-                outline: none;
-                width: 220px;
-            }
-            .filter-button.active-filter {
-                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
-            }
-            .filter-popover {
-                position: absolute;
-                right: 0;
-                top: 40px;
-                width: 220px;
-                background: #fff;
-                border: 1px solid #e6edf3;
-                border-radius: 0.5rem;
-                padding: 0.5rem;
-                box-shadow: 0 8px 24px rgba(16, 24, 40, 0.08);
-                z-index: 40;
-            }
-            .filter-title {
-                font-weight: 700;
-                margin-bottom: 0.5rem;
-            }
-            .filter-item {
-                display: block;
-                margin: 0.25rem 0;
-            }
-            .filter-actions {
-                display: flex;
-                justify-content: space-between;
-                margin-top: 0.5rem;
-            }
-        `
-    ]
+    styleUrls: ['./ticket-styles.css']
 })
 export class TicketList {
+    constructor(private activatedRoute: ActivatedRoute) {
+        console.log(this.activatedRoute);
+    }
+
     tickets: Ticket[] = [
         { id: '#59678', title: 'Designing with Adobe Illustrator', date: 'April 9, 2026', category: 'Inefficient Algorithms', user: 'Jane Austen', priority: 'Medium', status: 'open' },
         { id: '#21234', title: 'Creating Stunning Logos', date: 'February 28, 2026', category: 'Workflow Bottlenecks', user: 'J.K. Rowling', priority: 'High', status: 'open' },
@@ -286,6 +187,16 @@ export class TicketList {
         this.selectedPriorities.clear();
     }
 
+    // sort state: 'none' | 'asc' | 'desc'
+    sortOrder: 'none' | 'asc' | 'desc' = 'none';
+
+    toggleSort() {
+        // toggle between none -> asc -> desc -> none
+        if (this.sortOrder === 'none') this.sortOrder = 'asc';
+        else if (this.sortOrder === 'asc') this.sortOrder = 'desc';
+        else this.sortOrder = 'none';
+    }
+
     priorityClass(priority: Ticket['priority']) {
         return {
             'priority-high': priority === 'High',
@@ -335,28 +246,48 @@ export class TicketList {
     get filteredTickets() {
         const q = this.searchQuery.trim().toLowerCase();
 
-        return this.tickets
+        let result = this.tickets
             .filter((t) => {
-                // filter by selected tab/status (when 'all' is selected do not filter)
                 if (this.selectedTab && this.selectedTab !== 'all') {
                     if (t.status !== this.selectedTab) return false;
                 }
                 return true;
             })
             .filter((t) => {
-                // priority filter if any selected
                 if (this.selectedPriorities.size > 0 && !this.selectedPriorities.has(t.priority)) return false;
                 return true;
             })
             .filter((t) => {
                 if (!q) return true;
-                // check id, title, category, user, priority, status
                 return t.id.toLowerCase().includes(q) || t.title.toLowerCase().includes(q) || t.category.toLowerCase().includes(q) || t.user.toLowerCase().includes(q) || t.priority.toLowerCase().includes(q) || t.status.toLowerCase().includes(q);
             });
+
+        // Apply sorting by date when requested
+        if (this.sortOrder === 'asc') {
+            result = result.slice().sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+        } else if (this.sortOrder === 'desc') {
+            result = result.slice().sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        }
+
+        return result;
+    }
+
+    visible: boolean = false;
+
+    showVisible() {
+        this.visible = true;
     }
 
     ngOnInit(): void {
         document.addEventListener('click', this._docClick);
+        const path = this.activatedRoute.snapshot.routeConfig?.path;
+        if (path) {
+            if (path === 'ticket/new') {
+                //TODO: Open ticket page modal
+                this.showVisible();
+            }
+        }
+        console.log('Current path:', path);
     }
 
     ngOnDestroy(): void {

@@ -4,7 +4,7 @@ import { Dashboard } from './app/pages/dashboard/dashboard';
 import { Documentation } from './app/pages/documentation/documentation';
 import { Landing } from './app/pages/landing/landing';
 import { Notfound } from './app/pages/notfound/notfound';
-import { TicketList } from '@/pages/ticket/ticketList';
+import { TicketList } from '@/pages/ticket/ticket-list';
 
 export const appRoutes: Routes = [
     {
@@ -12,7 +12,9 @@ export const appRoutes: Routes = [
         component: AppLayout,
         children: [
             { path: '', component: Dashboard },
+            { path: 'dashboard', component: Dashboard },
             { path: 'ticket', component: TicketList },
+            { path: 'ticket/new', component: TicketList },
             { path: 'uikit', loadChildren: () => import('./app/pages/uikit/uikit.routes') },
             { path: 'documentation', component: Documentation },
             { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') }

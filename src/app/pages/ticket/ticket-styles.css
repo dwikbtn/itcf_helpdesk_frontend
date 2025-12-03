@@ -1,0 +1,119 @@
+:host {
+    display: block;
+}
+.priority-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.75rem;
+    color: #fff;
+}
+.priority-high {
+    background: #10b981;
+} /* green */
+.priority-medium {
+    background: #3b82f6;
+} /* blue */
+.priority-low {
+    background: #6b7280;
+} /* gray */
+
+.status-badge {
+    display: inline-block;
+    padding: 0.2rem 0.5rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    font-size: 0.7rem;
+    color: #fff;
+    text-transform: capitalize;
+}
+.status-open {
+    background: #059669;
+} /* emerald */
+.status-in-progress {
+    background: #f59e0b;
+} /* amber */
+.status-closed {
+    background: #6b7280;
+} /* gray */
+
+.action-btn {
+    background: #fff;
+    border: 1px solid #e6edf3;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    min-width: 120px;
+    text-align: left;
+}
+.action-btn.danger {
+    color: #dc2626;
+}
+.p-datatable .p-datatable-tbody > tr > td {
+    vertical-align: middle;
+}
+.tabs .tab {
+    background: transparent;
+    border: 1px solid transparent;
+    padding: 0.4rem 0.75rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    color: #374151;
+    cursor: pointer;
+}
+.tabs .tab .count {
+    color: #6b7280;
+    font-weight: 500;
+    margin-left: 6px;
+}
+.tabs .tab.active {
+    background: #ffffff;
+    border-color: #e5e7eb;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+.search-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #fff;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid #e6edf3;
+}
+.search-wrapper input {
+    border: none;
+    outline: none;
+    width: 220px;
+}
+.filter-button.active-filter {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+.filter-popover {
+    position: absolute;
+    right: 0;
+    top: 40px;
+    width: 220px;
+    background: #fff;
+    border: 1px solid #e6edf3;
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    box-shadow: 0 8px 24px rgba(16, 24, 40, 0.08);
+    z-index: 40;
+}
+.filter-title {
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+.filter-item {
+    display: block;
+    margin: 0.25rem 0;
+}
+.filter-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+}
+.sort-active {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}

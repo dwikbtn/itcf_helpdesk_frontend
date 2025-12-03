@@ -15,7 +15,14 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
         <button type="button" class="tab" role="tab" [attr.aria-selected]="selectedTab === 'closed'" [class.active]="selectedTab === 'closed'" (click)="selectTab('closed')">
             Closed <span class="count">({{ closedCount }})</span>
         </button>
-    </div>`
+    </div>`,
+    styles: [
+        `
+            .tabs .tab.active {
+                font-weight: 800;
+            }
+        `
+    ]
 })
 export class TicketStatusTab {
     // Component logic goes here

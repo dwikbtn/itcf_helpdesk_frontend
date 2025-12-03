@@ -4,8 +4,9 @@ import { CommonModule } from '@angular/common';
 @Component({
     selector: 'app-filter',
     standalone: true,
+    host: { class: 'filter-popover' },
     imports: [CommonModule],
-    template: ` <div *ngIf="showFilter" class="filter-popover" (click)="$event.stopPropagation()">
+    template: ` <div *ngIf="showFilter" class="" (click)="$event.stopPropagation()">
         <div class="filter-section">
             <div class="filter-title">Priority</div>
             <label class="filter-item"><input type="checkbox" [checked]="selectedPriorities.has('High')" (change)="togglePriority('High', $event)" /> High</label>
