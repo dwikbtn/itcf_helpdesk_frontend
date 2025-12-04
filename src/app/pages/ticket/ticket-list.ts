@@ -28,7 +28,7 @@ interface Ticket {
         <section class="p-4">
             <div class="text-3xl font-bold mb-4">Ticket List</div>
             <button pButton type="button" label="New Ticket" icon="pi pi-plus" (click)="showVisible()"></button>
-            <div class="toolbar flex items-center justify-between mb-4">
+            <div class="toolbar flex items-center justify-between mb-4 mt-2">
                 <ticket-status-tab [selectedTab]="selectedTab" [totalCount]="totalCount" [openedCount]="openedCount" [inProgressCount]="inProgressCount" [closedCount]="closedCount" (tabSelected)="selectTab($event)"></ticket-status-tab>
 
                 <div class="controls flex items-center gap-3" style="position:relative">
