@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TableModule } from 'primeng/table';
@@ -9,6 +9,10 @@ import { Filter } from './components/filter';
 import { TicketStatusTab } from './components/ticket-status-tab';
 import { ActivatedRoute } from '@angular/router';
 import { NewTicket } from './new-ticket';
+import { Select, Store } from '@ngxs/store';
+import { TicketState } from '@/state/store/ticket/ticket.state';
+import { Observable } from 'rxjs';
+import { LoadTickets } from '@/state/store/ticket/ticket.action';
 
 interface Ticket {
     id: string;
@@ -122,18 +126,22 @@ export class TicketList {
         console.log(this.activatedRoute);
     }
 
-    tickets: Ticket[] = [
-        { id: '#59678', title: 'Designing with Adobe Illustrator', date: 'April 9, 2026', category: 'Inefficient Algorithms', user: 'Jane Austen', priority: 'Medium', status: 'open' },
-        { id: '#21234', title: 'Creating Stunning Logos', date: 'February 28, 2026', category: 'Workflow Bottlenecks', user: 'J.K. Rowling', priority: 'High', status: 'open' },
-        { id: '#39678', title: 'Python Programming Essentials', date: 'January 8, 2026', category: 'Security Vulnerabilities', user: 'Emily Brontë', priority: 'High', status: 'open' },
-        { id: '#71789', title: 'Effective Social Media Marketing', date: 'March 7, 2026', category: 'Deprecated Libraries', user: 'George Orwell', priority: 'Medium', status: 'open' },
-        { id: '#36890', title: 'Effective Email Marketing Campaigns', date: 'September 29, 2026', category: 'Inadequate Storage', user: 'Fyodor Dostoevsky', priority: 'Medium', status: 'open' },
-        { id: '#46890', title: 'Animation Basics with After Effects', date: 'July 28, 2026', category: 'Script Errors', user: 'Harper Lee', priority: 'Medium', status: 'closed' },
-        { id: '#69678', title: 'SEO Strategies for Business Growth', date: 'November 20, 2026', category: 'System Crashes', user: 'Charlotte Brontë', priority: 'High', status: 'open' },
-        { id: '#28901', title: 'Creating Engaging Content', date: 'October 19, 2026', category: 'Application Freezing', user: 'Herman Melville', priority: 'Medium', status: 'closed' },
-        { id: '#27890', title: 'Professional Video Production', date: 'January 26, 2026', category: 'Ineffective Caching', user: 'Fyodor Dostoevsky', priority: 'High', status: 'open' },
-        { id: '#45678', title: 'Designing Accessible Websites', date: 'September 16, 2026', category: 'Overuse of Resources', user: 'Charles Dickens', priority: 'Medium', status: 'open' }
-    ];
+    private store = inject(Store);
+
+    tickets = this.store.selectSignal(TicketState.tickets);
+
+    // tickets: Ticket[] = [
+    //     { id: '#59678', title: 'Designing with Adobe Illustrator', date: 'April 9, 2026', category: 'Inefficient Algorithms', user: 'Jane Austen', priority: 'Medium', status: 'open' },
+    //     { id: '#21234', title: 'Creating Stunning Logos', date: 'February 28, 2026', category: 'Workflow Bottlenecks', user: 'J.K. Rowling', priority: 'High', status: 'open' },
+    //     { id: '#39678', title: 'Python Programming Essentials', date: 'January 8, 2026', category: 'Security Vulnerabilities', user: 'Emily Brontë', priority: 'High', status: 'open' },
+    //     { id: '#71789', title: 'Effective Social Media Marketing', date: 'March 7, 2026', category: 'Deprecated Libraries', user: 'George Orwell', priority: 'Medium', status: 'open' },
+    //     { id: '#36890', title: 'Effective Email Marketing Campaigns', date: 'September 29, 2026', category: 'Inadequate Storage', user: 'Fyodor Dostoevsky', priority: 'Medium', status: 'open' },
+    //     { id: '#46890', title: 'Animation Basics with After Effects', date: 'July 28, 2026', category: 'Script Errors', user: 'Harper Lee', priority: 'Medium', status: 'closed' },
+    //     { id: '#69678', title: 'SEO Strategies for Business Growth', date: 'November 20, 2026', category: 'System Crashes', user: 'Charlotte Brontë', priority: 'High', status: 'open' },
+    //     { id: '#28901', title: 'Creating Engaging Content', date: 'October 19, 2026', category: 'Application Freezing', user: 'Herman Melville', priority: 'Medium', status: 'closed' },
+    //     { id: '#27890', title: 'Professional Video Production', date: 'January 26, 2026', category: 'Ineffective Caching', user: 'Fyodor Dostoevsky', priority: 'High', status: 'open' },
+    //     { id: '#45678', title: 'Designing Accessible Websites', date: 'September 16, 2026', category: 'Overuse of Resources', user: 'Charles Dickens', priority: 'Medium', status: 'open' }
+    // ];
 
     selectedTab: 'all' | 'open' | 'in-progress' | 'closed' = 'all';
 
@@ -149,19 +157,19 @@ export class TicketList {
     };
 
     get openedCount() {
-        return this.tickets.filter((t) => t.status === 'open').length;
+        return this.tickets().filter((t) => t.status === 'open').length;
     }
 
     get totalCount() {
-        return this.tickets.length;
+        return this.tickets().length;
     }
 
     get inProgressCount() {
-        return this.tickets.filter((t) => t.status === 'in-progress').length;
+        return this.tickets().filter((t) => t.status === 'in progress').length;
     }
 
     get closedCount() {
-        return this.tickets.filter((t) => t.status === 'closed').length;
+        return this.tickets().filter((t) => t.status === 'closed').length;
     }
 
     selectTab(tab: 'all' | 'open' | 'in-progress' | 'closed') {
@@ -246,7 +254,7 @@ export class TicketList {
     get filteredTickets() {
         const q = this.searchQuery.trim().toLowerCase();
 
-        let result = this.tickets
+        let result = this.tickets()
             .filter((t) => {
                 if (this.selectedTab && this.selectedTab !== 'all') {
                     if (t.status !== this.selectedTab) return false;
@@ -259,14 +267,14 @@ export class TicketList {
             })
             .filter((t) => {
                 if (!q) return true;
-                return t.id.toLowerCase().includes(q) || t.title.toLowerCase().includes(q) || t.category.toLowerCase().includes(q) || t.user.toLowerCase().includes(q) || t.priority.toLowerCase().includes(q) || t.status.toLowerCase().includes(q);
+                return t.id.toLowerCase().includes(q) || t.title.toLowerCase().includes(q) || t.user.toLowerCase().includes(q) || t.priority.toLowerCase().includes(q) || t.status.toLowerCase().includes(q);
             });
 
         // Apply sorting by date when requested
         if (this.sortOrder === 'asc') {
-            result = result.slice().sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+            result = result.slice().sort((a, b) => new Date(a.createdDate).getTime() - new Date(b.createdDate).getTime());
         } else if (this.sortOrder === 'desc') {
-            result = result.slice().sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+            result = result.slice().sort((a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime());
         }
 
         return result;
@@ -287,7 +295,7 @@ export class TicketList {
                 this.showVisible();
             }
         }
-        console.log('Current path:', path);
+        this.store.dispatch(new LoadTickets());
     }
 
     ngOnDestroy(): void {
