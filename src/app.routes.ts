@@ -14,9 +14,7 @@ export const appRoutes: Routes = [
         children: [
             { path: '', component: Dashboard },
             { path: 'dashboard', component: Dashboard },
-            { path: 'ticket', component: TicketList },
-            { path: 'ticket/new', component: TicketList },
-            { path: 'ticket/view/:id', component: ViewTicket },
+            { path: 'ticket', loadChildren: () => import('./app/pages/ticket/ticket.routes') },
             { path: 'uikit', loadChildren: () => import('./app/pages/uikit/uikit.routes') },
             { path: 'documentation', component: Documentation },
             { path: 'pages', loadChildren: () => import('./app/pages/pages.routes') }
