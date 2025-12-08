@@ -48,19 +48,19 @@ import { MessageService } from 'primeng/api';
                             <!-- Priority -->
                             <div class="mb-4">
                                 <label for="priority" class="block text-sm font-medium mb-2">Priority</label>
-                                <p-select id="priority" [options]="priorityOptions" [(ngModel)]="selectedPriority" name="priority" placeholder="Select Priority" optionLabel="label" optionValue="value" class="w-full" />
+                                <p-select id="priority" [options]="priorityOptions" [(ngModel)]="selectedPriority" name="priority" placeholder="Select Priority" optionLabel="label" optionValue="value" class="w-full" [disabled]="!isITSupport" />
                             </div>
 
                             <!-- Status -->
                             <div class="mb-4">
                                 <label for="status" class="block text-sm font-medium mb-2">Status</label>
-                                <p-select id="status" [options]="statusOptions" [(ngModel)]="selectedStatus" name="status" placeholder="Select Status" optionLabel="label" optionValue="value" class="w-full" />
+                                <p-select id="status" [options]="statusOptions" [(ngModel)]="selectedStatus" name="status" placeholder="Select Status" optionLabel="label" optionValue="value" class="w-full" [disabled]="!isITSupport" />
                             </div>
 
                             <!-- Assign To -->
                             <div class="mb-4">
                                 <label for="assignee" class="block text-sm font-medium mb-2">Assign To</label>
-                                <p-select id="assignee" [options]="assigneeOptions" [(ngModel)]="selectedAssignee" name="assignee" placeholder="Select Assignee" optionLabel="label" optionValue="value" class="w-full" />
+                                <p-select id="assignee" [options]="assigneeOptions" [(ngModel)]="selectedAssignee" name="assignee" placeholder="Select Assignee" optionLabel="label" optionValue="value" class="w-full" [disabled]="!isITSupport" />
                             </div>
 
                             <!-- Action Buttons -->
@@ -84,6 +84,9 @@ export class EditTicket {
     store = inject(Store);
 
     activeTicket = this.store.selectSignal(TicketState.viewedSingleTicket);
+
+    // Hardcoded flag - set to true to enable IT support features
+    isITSupport: boolean = false; // Change to false to disable priority, status, and assignee fields
 
     // Original values to track changes
     originalTitle: string = '';
@@ -146,13 +149,18 @@ export class EditTicket {
     }
 
     hasChanges(): boolean {
-        return (
-            this.selectedTitle !== this.originalTitle ||
-            this.selectedDescription !== this.originalDescription ||
-            this.selectedPriority !== this.originalPriority ||
-            this.selectedStatus !== this.originalStatus ||
-            this.selectedAssignee !== this.originalAssignee
-        );
+        // For IT support, check all fields
+        if (this.isITSupport) {
+            return (
+                this.selectedTitle !== this.originalTitle ||
+                this.selectedDescription !== this.originalDescription ||
+                this.selectedPriority !== this.originalPriority ||
+                this.selectedStatus !== this.originalStatus ||
+                this.selectedAssignee !== this.originalAssignee
+            );
+        }
+        // For regular users, only check title and description
+        return this.selectedTitle !== this.originalTitle || this.selectedDescription !== this.originalDescription;
     }
 
     onSubmit() {
