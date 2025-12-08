@@ -60,7 +60,7 @@ import { Ticket } from '@/state/store/ticket/ticket.state';
     imports: [Dialog, InputText, Textarea, Button, FileUpload, CommonModule, FormsModule, PrimeTemplate]
 })
 export class NewTicket {
-    store = Inject(Store);
+    constructor(private store: Store) {}
 
     @Input() visible: boolean = false;
     @Output() visibleChange = new EventEmitter<boolean>();
@@ -80,7 +80,10 @@ export class NewTicket {
         imageListUrls: [],
         assignee: '',
         createdDate: new Date(),
+        updatedDate: new Date(),
         id: '',
+
+        //TODO: Fill it later when implementing user auth
         priority: 'Medium',
         status: 'open',
         user: ''
@@ -116,6 +119,7 @@ export class NewTicket {
 
     onSubmit() {
         if (this.isFormValid()) {
+            console.log('Creating ticket:', this.ticketData);
             this.create.emit({ ...this.ticketData });
             this.store.dispatch(new AddTicket(this.ticketData));
             this.resetAndClose();

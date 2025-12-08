@@ -4,7 +4,7 @@ export class LoadTickets {
     static readonly type = '[Ticket] Load Tickets';
 }
 
-export class removeTicket {
+export class RemoveTicket {
     static readonly type = '[Ticket] Remove Ticket';
     constructor(public id: string) {}
 }
@@ -27,6 +27,6 @@ export class ViewTicket {
     constructor(public id: string) {}
 }
 
-type TicketActions = LoadTickets | removeTicket | AddTicket | UpdateTicket | ViewTicket;
+type TicketActions = LoadTickets | RemoveTicket | AddTicket | UpdateTicket | ViewTicket;
 
 export type { TicketActions };

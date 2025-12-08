@@ -1,5 +1,5 @@
 import { State, Action, StateContext, Selector } from '@ngxs/store';
-import { AddTicket, removeTicket, ViewTicket, UpdateTicket, LoadTickets } from './ticket.action';
+import { AddTicket, RemoveTicket, ViewTicket, UpdateTicket, LoadTickets } from './ticket.action';
 import { Injectable } from '@angular/core';
 
 export interface Ticket {
@@ -68,8 +68,8 @@ export class TicketState {
         });
     }
 
-    @Action(removeTicket)
-    removeTicket(ctx: StateContext<TicketStateModel>, action: removeTicket) {
+    @Action(RemoveTicket)
+    removeTicket(ctx: StateContext<TicketStateModel>, action: RemoveTicket) {
         const state = ctx.getState();
         ctx.patchState({
             tickets: state.tickets.filter((ticket) => ticket.id !== action.id)

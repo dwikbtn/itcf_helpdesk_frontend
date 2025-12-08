@@ -11,7 +11,8 @@ import { ActivatedRoute } from '@angular/router';
 import { NewTicket } from './new-ticket';
 import { Store } from '@ngxs/store';
 import { Ticket, TicketState } from '@/state/store/ticket/ticket.state';
-import { LoadTickets } from '@/state/store/ticket/ticket.action';
+import { LoadTickets, RemoveTicket, UpdateTicket } from '@/state/store/ticket/ticket.action';
+import { formatDate, priorityClass, statusClass, statusLabel } from './ticket.utils';
 
 @Component({
     selector: 'app-ticket-list',
@@ -81,8 +82,8 @@ import { LoadTickets } from '@/state/store/ticket/ticket.action';
                             <div class="text-xs text-gray-500">{{ ticket.date }}</div>
                         </td>
                         <!-- <td>{{ ticket.category }}</td> -->
-                        <td>{{ ticket.createdDate }}</td>
-                        <td>{{ ticket.updatedDate }}</td>
+                        <td>{{ formatDate(ticket.createdDate) }}</td>
+                        <td>{{ formatDate(ticket.updatedDate) }}</td>
                         <td>{{ ticket.user }}</td>
                         <td>
                             <span class="priority-badge" [ngClass]="priorityClass(ticket.priority)">{{ ticket.priority }}</span>
@@ -115,26 +116,12 @@ import { LoadTickets } from '@/state/store/ticket/ticket.action';
     styleUrls: ['./ticket-styles.css']
 })
 export class TicketList {
-    constructor(private activatedRoute: ActivatedRoute) {
-        console.log(this.activatedRoute);
-    }
+    constructor(private activatedRoute: ActivatedRoute) {}
 
     private store = inject(Store);
 
+    //ticket state using signals
     tickets = this.store.selectSignal(TicketState.tickets);
-
-    // tickets: Ticket[] = [
-    //     { id: '#59678', title: 'Designing with Adobe Illustrator', date: 'April 9, 2026', category: 'Inefficient Algorithms', user: 'Jane Austen', priority: 'Medium', status: 'open' },
-    //     { id: '#21234', title: 'Creating Stunning Logos', date: 'February 28, 2026', category: 'Workflow Bottlenecks', user: 'J.K. Rowling', priority: 'High', status: 'open' },
-    //     { id: '#39678', title: 'Python Programming Essentials', date: 'January 8, 2026', category: 'Security Vulnerabilities', user: 'Emily Brontë', priority: 'High', status: 'open' },
-    //     { id: '#71789', title: 'Effective Social Media Marketing', date: 'March 7, 2026', category: 'Deprecated Libraries', user: 'George Orwell', priority: 'Medium', status: 'open' },
-    //     { id: '#36890', title: 'Effective Email Marketing Campaigns', date: 'September 29, 2026', category: 'Inadequate Storage', user: 'Fyodor Dostoevsky', priority: 'Medium', status: 'open' },
-    //     { id: '#46890', title: 'Animation Basics with After Effects', date: 'July 28, 2026', category: 'Script Errors', user: 'Harper Lee', priority: 'Medium', status: 'closed' },
-    //     { id: '#69678', title: 'SEO Strategies for Business Growth', date: 'November 20, 2026', category: 'System Crashes', user: 'Charlotte Brontë', priority: 'High', status: 'open' },
-    //     { id: '#28901', title: 'Creating Engaging Content', date: 'October 19, 2026', category: 'Application Freezing', user: 'Herman Melville', priority: 'Medium', status: 'closed' },
-    //     { id: '#27890', title: 'Professional Video Production', date: 'January 26, 2026', category: 'Ineffective Caching', user: 'Fyodor Dostoevsky', priority: 'High', status: 'open' },
-    //     { id: '#45678', title: 'Designing Accessible Websites', date: 'September 16, 2026', category: 'Overuse of Resources', user: 'Charles Dickens', priority: 'Medium', status: 'open' }
-    // ];
 
     selectedTab: 'all' | 'open' | 'in-progress' | 'closed' = 'all';
 
@@ -198,43 +185,24 @@ export class TicketList {
         else this.sortOrder = 'none';
     }
 
-    priorityClass(priority: Ticket['priority']) {
-        return {
-            'priority-high': priority === 'High',
-            'priority-medium': priority === 'Medium',
-            'priority-low': priority === 'Low'
-        };
-    }
+    priorityClass = priorityClass;
 
-    statusClass(status: Ticket['status']) {
-        return {
-            'status-open': status === 'open',
-            'status-in-progress': status === 'in-progress',
-            'status-closed': status === 'closed'
-        };
-    }
+    statusClass = statusClass;
 
-    statusLabel(status: Ticket['status']) {
-        switch (status) {
-            case 'open':
-                return 'Open';
-            case 'in-progress':
-                return 'In Progress';
-            case 'closed':
-                return 'Closed';
-        }
-    }
+    statusLabel = statusLabel;
+
+    formatDate = formatDate;
 
     viewTicket(ticket: Ticket) {
         console.log('View', ticket);
     }
 
     closeTicket(ticket: Ticket) {
-        console.log('Close', ticket);
+        this.store.dispatch(new UpdateTicket(ticket.id, { ...ticket, status: 'closed' }));
     }
 
     deleteTicket(ticket: Ticket) {
-        console.log('Delete', ticket);
+        this.store.dispatch(new RemoveTicket(ticket.id));
     }
 
     onSearch(event: Event) {
