@@ -37,10 +37,10 @@ import { Ticket } from '@/state/store/ticket/ticket.state';
                 </div>
 
                 <!-- Add assign to -->
-                <!-- <div class="flex flex-col gap-2">
+                <div class="flex flex-col gap-2">
                     <label for="assignee" class="text-sm font-medium text-surface-900 dark:text-surface-0"> Assign To </label>
                     <p-select id="assignee" [(ngModel)]="ticketData.assignee" [options]="" optionLabel="label" optionValue="value" placeholder="Select a user" class="w-full" />
-                </div> -->
+                </div>
 
                 <!-- Upload Image -->
                 <div class="flex flex-col gap-2">
@@ -57,7 +57,7 @@ import { Ticket } from '@/state/store/ticket/ticket.state';
             </ng-template>
         </p-dialog>
     `,
-    imports: [Dialog, InputText, Textarea, Button, FileUpload, CommonModule, FormsModule, PrimeTemplate]
+    imports: [Dialog, InputText, Textarea, Button, FileUpload, CommonModule, FormsModule, PrimeTemplate, Select]
 })
 export class NewTicket {
     constructor(private store: Store) {}

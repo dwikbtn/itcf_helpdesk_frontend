@@ -17,17 +17,18 @@ import { formatDate, priorityClass, statusClass, statusLabel } from './ticket.ut
 import { Toast } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
     selector: 'app-ticket-list',
     standalone: true,
-    imports: [CommonModule, RouterModule, TableModule, ButtonModule, Popover, InputTextModule, TicketStatusTab, Filter, NewTicket, Toast, DeleteTicketDialog],
+    imports: [CommonModule, RouterModule, TableModule, ButtonModule, Popover, InputTextModule, TicketStatusTab, Filter, NewTicket, Toast, DeleteTicketDialog, TooltipModule],
     providers: [MessageService],
     template: `
         <section class="p-4">
             <p-toast />
             <div class="text-3xl font-bold mb-4">Ticket List</div>
-            <button pButton type="button" label="New Ticket" icon="pi pi-plus" (click)="showVisible()"></button>
+            <button pButton type="button" label="New Ticket" icon="pi pi-plus" (click)="showVisible()" pTooltip="Create a new ticket" tooltipPosition="bottom"></button>
             <div class="toolbar flex items-center justify-between mb-4 mt-2">
                 <ticket-status-tab [selectedTab]="selectedTab" [totalCount]="totalCount" [openedCount]="openedCount" [inProgressCount]="inProgressCount" [closedCount]="closedCount" (tabSelected)="selectTab($event)"></ticket-status-tab>
 
@@ -37,8 +38,10 @@ import { Router } from '@angular/router';
                         <input pInputText type="text" placeholder="Search" (input)="onSearch($event)" />
                     </div>
 
-                    <button pButton type="button" class="p-button-outlined filter-button" [class.active-filter]="selectedPriorities.size > 0" aria-label="Filter" (click)="toggleFilter($event)"><i class="pi pi-filter"></i></button>
-                    <button pButton type="button" class="p-button-outlined" [class.sort-active]="sortOrder !== 'none'" aria-label="Sort" (click)="toggleSort()">
+                    <button pButton type="button" class="p-button-outlined filter-button" [class.active-filter]="selectedPriorities.size > 0" aria-label="Filter" (click)="toggleFilter($event)" pTooltip="Filter by priority" tooltipPosition="bottom">
+                        <i class="pi pi-filter"></i>
+                    </button>
+                    <button pButton type="button" class="p-button-outlined" [class.sort-active]="sortOrder !== 'none'" aria-label="Sort" (click)="toggleSort()" pTooltip="Sort by date" tooltipPosition="bottom">
                         <i class="pi" [ngClass]="sortOrder === 'asc' ? 'pi-sort-alt-up' : sortOrder === 'desc' ? 'pi-sort-alt-down' : 'pi-sort'"></i>
                     </button>
 
@@ -99,15 +102,16 @@ import { Router } from '@angular/router';
                         </td>
                         <td>
                             <div class="flex items-center gap-2">
-                                <button pButton type="button" icon="pi pi-eye" class="p-button-text p-button-plain" (click)="viewTicket(ticket)"></button>
+                                <button pButton type="button" icon="pi pi-eye" class="p-button-text p-button-plain" (click)="viewTicket(ticket)" pTooltip="View ticket details" tooltipPosition="top"></button>
 
-                                <button type="button" class="p-button p-component p-button-text" (click)="menu.toggle($event)">
+                                <button type="button" class="p-button p-component p-button-text" (click)="menu.toggle($event)" pTooltip="More actions" tooltipPosition="top">
                                     <i class="pi pi-ellipsis-v"></i>
                                 </button>
                                 <p-popover #menu>
                                     <div class="flex flex-col gap-2">
-                                        <button type="button" class="action-btn" (click)="closeTicket(ticket)">Close Ticket</button>
-                                        <button type="button" class="action-btn danger" (click)="deleteTicket(ticket)">Delete</button>
+                                        <button type="button" class="action-btn" (click)="closeTicket(ticket)" pTooltip="Mark ticket as closed" tooltipPosition="left">Close Ticket</button>
+                                        <button type="button" class="action-btn " (click)="editTicket(ticket)" pTooltip="Edit ticket details" tooltipPosition="left">Edit Ticket</button>
+                                        <button type="button" class="action-btn danger" (click)="deleteTicket(ticket)" pTooltip="Delete this ticket" tooltipPosition="left">Delete</button>
                                     </div>
                                 </p-popover>
                             </div>
@@ -212,6 +216,17 @@ export class TicketList {
 
     closeTicket(ticket: Ticket) {
         this.store.dispatch(new UpdateTicket(ticket.id, { ...ticket, status: 'closed' }));
+        this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Ticket closed successfully',
+            life: 3000
+        });
+    }
+
+    editTicket(ticket: Ticket) {
+        // Navigate to ticket edit page
+        this.router.navigate(['/ticket/edit', ticket.id]);
     }
 
     deleteTicket(ticket: Ticket) {
