@@ -120,8 +120,9 @@ export class NewTicket {
     onSubmit() {
         if (this.isFormValid()) {
             console.log('Creating ticket:', this.ticketData);
-            this.create.emit({ ...this.ticketData });
-            this.store.dispatch(new AddTicket(this.ticketData));
+            this.create.emit({ ...this.ticketData, id: Date.now().toString() });
+            //temporary add id here, should be handled by backend
+            this.store.dispatch(new AddTicket({ ...this.ticketData, id: Date.now().toString() }));
             this.resetAndClose();
         }
     }

@@ -28,7 +28,7 @@ import { TicketState } from '@/state/store/ticket/ticket.state';
                 </div>
                 <!-- action group button here -->
                 <div class="button-group ml-auto flex gap-2 items-start">
-                    <button pButton type="button" label="Edit" icon="pi pi-pencil" class="p-button-text"></button>
+                    <button pButton type="button" label="Edit" icon="pi pi-pencil" class="p-button-text" (click)="handleEdit()"></button>
                     <!-- <button pButton type="button" label="Close Ticket" icon="pi pi-times" class="p-button-text"></button> -->
                 </div>
             </div>
@@ -105,4 +105,6 @@ export class ViewTicket {
                 return 'secondary';
         }
     }
+
+    handleEdit() {}
 }

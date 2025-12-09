@@ -24,108 +24,8 @@ import { TooltipModule } from 'primeng/tooltip';
     standalone: true,
     imports: [CommonModule, RouterModule, TableModule, ButtonModule, Popover, InputTextModule, TicketStatusTab, Filter, NewTicket, Toast, DeleteTicketDialog, TooltipModule],
     providers: [MessageService],
-    template: `
-        <section class="p-4">
-            <p-toast />
-            <div class="text-3xl font-bold mb-4">Ticket List</div>
-            <button pButton type="button" label="New Ticket" icon="pi pi-plus" (click)="showVisible()" pTooltip="Create a new ticket" tooltipPosition="bottom"></button>
-            <div class="toolbar flex items-center justify-between mb-4 mt-2">
-                <ticket-status-tab [selectedTab]="selectedTab" [totalCount]="totalCount" [openedCount]="openedCount" [inProgressCount]="inProgressCount" [closedCount]="closedCount" (tabSelected)="selectTab($event)"></ticket-status-tab>
+    templateUrl: './template/ticket-list.html',
 
-                <div class="controls flex items-center gap-3" style="position:relative">
-                    <div class="search-wrapper">
-                        <i class="pi pi-search search-icon pr-4 "></i>
-                        <input pInputText type="text" placeholder="Search" (input)="onSearch($event)" />
-                    </div>
-
-                    <button pButton type="button" class="p-button-outlined filter-button" [class.active-filter]="selectedPriorities.size > 0" aria-label="Filter" (click)="toggleFilter($event)" pTooltip="Filter by priority" tooltipPosition="bottom">
-                        <i class="pi pi-filter"></i>
-                    </button>
-                    <button pButton type="button" class="p-button-outlined" [class.sort-active]="sortOrder !== 'none'" aria-label="Sort" (click)="toggleSort()" pTooltip="Sort by date" tooltipPosition="bottom">
-                        <i class="pi" [ngClass]="sortOrder === 'asc' ? 'pi-sort-alt-up' : sortOrder === 'desc' ? 'pi-sort-alt-down' : 'pi-sort'"></i>
-                    </button>
-
-                    <app-filter
-                        *ngIf="showFilter"
-                        [showFilter]="showFilter"
-                        [selectedPriorities]="selectedPriorities"
-                        (togglePriorityEvent)="togglePriority($event.priority, $event.event)"
-                        (applyFilterEvent)="applyFilter()"
-                        (clearFilterEvent)="clearFilter()"
-                    ></app-filter>
-                    <div *ngIf="showFilter" class="filter-popover" (click)="$event.stopPropagation()">
-                        <div class="filter-section">
-                            <div class="filter-title">Priority</div>
-                            <label class="filter-item"><input type="checkbox" [checked]="selectedPriorities.has('High')" (change)="togglePriority('High', $event)" /> High</label>
-                            <label class="filter-item"><input type="checkbox" [checked]="selectedPriorities.has('Medium')" (change)="togglePriority('Medium', $event)" /> Medium</label>
-                            <label class="filter-item"><input type="checkbox" [checked]="selectedPriorities.has('Low')" (change)="togglePriority('Low', $event)" /> Low</label>
-                        </div>
-                        <div class="filter-actions">
-                            <button pButton type="button" class="p-button" (click)="applyFilter()">Apply</button>
-                            <button pButton type="button" class="p-button-text" (click)="clearFilter()">Clear</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <p-table [value]="filteredTickets" class="p-datatable-gridlines">
-                <ng-template pTemplate="header">
-                    <tr>
-                        <th>Ticket ID</th>
-                        <th>Title</th>
-                        <!-- <th>Category</th> -->
-                        <!-- <th>Created At</th>
-                        <th>Updated At</th> -->
-                        <th>User Name</th>
-                        <th>Priority</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </ng-template>
-
-                <ng-template pTemplate="body" let-ticket>
-                    <tr>
-                        <td>{{ ticket.id }}</td>
-                        <td>
-                            <div class="font-semibold">{{ ticket.title }}</div>
-                            <div class="text-xs text-gray-500">{{ ticket.date }}</div>
-                        </td>
-                        <!-- <td>{{ ticket.category }}</td> -->
-                        <!-- <td>{{ formatDate(ticket.createdDate) }}</td>
-                        <td>{{ formatDate(ticket.updatedDate) }}</td> -->
-                        <td>{{ ticket.user }}</td>
-                        <td>
-                            <span class="priority-badge" [ngClass]="priorityClass(ticket.priority)">{{ ticket.priority }}</span>
-                        </td>
-                        <td>
-                            <span class="status-badge" [ngClass]="{ 'status-open': ticket.status === 'open', 'status-in-progress': ticket.status === 'in-progress', 'status-closed': ticket.status === 'closed' }">{{ statusLabel(ticket.status) }}</span>
-                        </td>
-                        <td>
-                            <div class="flex items-center gap-2">
-                                <button pButton type="button" icon="pi pi-eye" class="p-button-text p-button-plain" (click)="viewTicket(ticket)" pTooltip="View ticket details" tooltipPosition="top"></button>
-
-                                <button type="button" class="p-button p-component p-button-text" (click)="menu.toggle($event)" pTooltip="More actions" tooltipPosition="top">
-                                    <i class="pi pi-ellipsis-v"></i>
-                                </button>
-                                <p-popover #menu>
-                                    <div class="flex flex-col gap-2">
-                                        <button type="button" class="action-btn" (click)="closeTicket(ticket)" pTooltip="Mark ticket as closed" tooltipPosition="left">Close Ticket</button>
-                                        <button type="button" class="action-btn " (click)="editTicket(ticket)" pTooltip="Edit ticket details" tooltipPosition="left">Edit Ticket</button>
-                                        <button type="button" class="action-btn danger" (click)="deleteTicket(ticket)" pTooltip="Delete this ticket" tooltipPosition="left">Delete</button>
-                                    </div>
-                                </p-popover>
-                            </div>
-                        </td>
-                    </tr>
-                </ng-template>
-            </p-table>
-        </section>
-        <!-- create ticket modal here -->
-        <app-new-ticket [visible]="visible" (visibleChange)="visible = $event" />
-
-        <!-- delete confirmation modal -->
-        <app-delete-ticket-dialog [(visible)]="showDeleteModal" [ticket]="ticketToDelete" (confirm)="confirmDelete()"> </app-delete-ticket-dialog>
-    `,
     styleUrls: ['./ticket-styles.css']
 })
 export class TicketList {
@@ -275,11 +175,11 @@ export class TicketList {
                 return t.id.toLowerCase().includes(q) || t.title.toLowerCase().includes(q) || t.user.toLowerCase().includes(q) || t.priority.toLowerCase().includes(q) || t.status.toLowerCase().includes(q);
             });
 
-        // Apply sorting by date when requested
+        // Apply sorting by name when requested
         if (this.sortOrder === 'asc') {
-            result = result.slice().sort((a, b) => new Date(a.createdDate).getTime() - new Date(b.createdDate).getTime());
+            result = result.slice().sort((a, b) => a.user.localeCompare(b.user));
         } else if (this.sortOrder === 'desc') {
-            result = result.slice().sort((a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime());
+            result = result.slice().sort((a, b) => b.user.localeCompare(a.user));
         }
 
         return result;

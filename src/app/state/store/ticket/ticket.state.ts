@@ -71,11 +71,8 @@ export class TicketState {
         // ];
         // ctx.patchState({ tickets, loading: false });
         setTimeout(() => {
-            const tickets: Ticket[] = [
-                { id: '1', title: 'Sample Ticket 1', description: 'Description 1', updatedDate: new Date(), createdDate: new Date(), user: 'User A', status: 'open', priority: 'High', assignee: 'User A' },
-                { id: '2', title: 'Sample Ticket 2', description: 'Description 2', updatedDate: new Date(), createdDate: new Date(), user: 'User B', status: 'in-progress', priority: 'Medium', assignee: 'User B' }
-            ];
-            ctx.patchState({ tickets, loading: false });
+            const state = ctx.getState();
+            ctx.patchState({ tickets: state.tickets, loading: false });
         }, 1000);
     }
     @Action(AddTicket)
