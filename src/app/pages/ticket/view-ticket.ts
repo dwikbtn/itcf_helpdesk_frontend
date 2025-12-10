@@ -5,13 +5,17 @@ import { DividerModule } from 'primeng/divider';
 import { CommonModule } from '@angular/common';
 import { Store } from '@ngxs/store';
 import { ActivatedRoute } from '@angular/router';
-import { ViewSingleTicket } from '@/state/store/ticket/ticket.action';
+import { UpdateTicket, ViewSingleTicket } from '@/state/store/ticket/ticket.action';
 import { TicketState } from '@/state/store/ticket/ticket.state';
 import { Router } from '@angular/router';
+import { MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
     selector: 'app-view-ticket',
-    template: `<section class="mb-4 card" *ngIf="ticketData(); else loading">
+    providers: [MessageService],
+    template: `<p-toast></p-toast>
+        <section class="mb-4 card" *ngIf="ticketData(); else loading">
             <div class="flex mb-7">
                 <div class="flex flex-col">
                     <h2 class="mb-2">{{ ticketData()?.title }}</h2>
@@ -30,7 +34,7 @@ import { Router } from '@angular/router';
                 <!-- action group button here -->
                 <div class="button-group ml-auto flex gap-2 items-start">
                     <button pButton type="button" label="Edit" icon="pi pi-pencil" class="p-button-text" (click)="handleEdit()"></button>
-                    <!-- <button pButton type="button" label="Close Ticket" icon="pi pi-times" class="p-button-text"></button> -->
+                    <button pButton type="button" label="Close Ticket" icon="pi pi-times" class="p-button-text" (click)="handleCloseTicket()"></button>
                 </div>
             </div>
             <p-divider></p-divider>
@@ -56,13 +60,14 @@ import { Router } from '@angular/router';
                 </div>
             </section>
         </ng-template>`,
-    imports: [ButtonDirective, Badge, DividerModule, CommonModule]
+    imports: [ButtonDirective, Badge, DividerModule, CommonModule, ToastModule]
 })
 export class ViewTicket {
     constructor(private activatedRoute: ActivatedRoute) {}
 
     store = inject(Store);
     router = inject(Router);
+    messageService = inject(MessageService);
 
     ticketData = this.store.selectSignal(TicketState.viewedSingleTicket);
 
@@ -110,5 +115,17 @@ export class ViewTicket {
 
     handleEdit() {
         this.router.navigate(['/ticket/edit', this.ticketData()?.id]);
+    }
+
+    handleCloseTicket() {
+        // TODO: Implement close ticket functionality
+        console.log('Close ticket clicked for ticket ID:', this.ticketData()?.id);
+        this.store.dispatch(new UpdateTicket(this.ticketData()!.id, { ...this.ticketData()!, status: 'closed' }));
+        this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Ticket has been closed successfully'
+        });
+        this.store.dispatch(new ViewSingleTicket(this.ticketData()!.id));
     }
 }

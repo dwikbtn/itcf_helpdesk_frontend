@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Fluid } from 'primeng/fluid';
 import { ChartModule } from 'primeng/chart';
 import { TotalTicketCard } from './components/totalTicketCard';
+import { Router } from '@angular/router';
 @Component({
     selector: 'app-dashboard',
     imports: [Fluid, ChartModule, TotalTicketCard],
@@ -34,9 +35,9 @@ import { TotalTicketCard } from './components/totalTicketCard';
             <!-- total tickets card -->
             <div class="grid grid-cols-12 gap-8">
                 <!-- total on progress tickets card -->
-                <app-total-ticket-card dataValue="8" dataLabel="Open Tickets" icon="pi pi-exclamation-circle" iconColor="#EF6C00"></app-total-ticket-card>
-                <app-total-ticket-card dataValue="5" dataLabel="On Progress Tickets" icon="pi pi-spinner" iconColor="#3B82F6"></app-total-ticket-card>
-                <app-total-ticket-card dataValue="12" dataLabel="Closed Tickets" icon="pi pi-check-circle" iconColor="#10B981"></app-total-ticket-card>
+                <app-total-ticket-card dataValue="8" dataLabel="Open Tickets" icon="pi pi-exclamation-circle" iconColor="#EF6C00" ticketStatus="open" (redirectToTicket)="onRedirectToTicketPage($event)"></app-total-ticket-card>
+                <app-total-ticket-card dataValue="5" dataLabel="On Progress Tickets" icon="pi pi-spinner" iconColor="#3B82F6" ticketStatus="in-progress" (redirectToTicket)="onRedirectToTicketPage($event)"></app-total-ticket-card>
+                <app-total-ticket-card dataValue="12" dataLabel="Closed Tickets" icon="pi pi-check-circle" iconColor="#10B981" ticketStatus="closed" (redirectToTicket)="onRedirectToTicketPage($event)"></app-total-ticket-card>
             </div>
 
             <div class=" w-full flex justify-end hover:cursor-pointer mt-4 text-primary-600 font-semibold">
@@ -46,11 +47,17 @@ import { TotalTicketCard } from './components/totalTicketCard';
     `
 })
 export class Dashboard {
+    private router = inject(Router);
     monthlyData = {};
     monthlyOptions = {};
 
     ticketStatusData = {};
     ticketStatusOptions = {};
+
+    onRedirectToTicketPage(redirectTo: 'open' | 'in-progress' | 'closed') {
+        console.log(redirectTo, 'redirectTo');
+        this.router.navigate([`/ticket`], { queryParams: { status: redirectTo } });
+    }
 
     ngOnInit() {
         this.initCharts();

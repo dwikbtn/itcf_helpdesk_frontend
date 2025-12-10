@@ -8,4 +8,5 @@ export default [
     { path: 'new', component: TicketList },
     { path: 'view/:id', component: ViewTicket },
     { path: 'edit/:id', component: EditTicket }
+    // { path: ':id', component: TicketList }
 ] as Routes;

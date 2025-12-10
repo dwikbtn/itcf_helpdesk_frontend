@@ -1,6 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { Store } from '@ngxs/store';
+import { ResetTicketState } from '@/state/store/ticket/ticket.action';
 
 @Component({
     selector: 'app-profilemenu',
@@ -21,10 +23,14 @@ import { Router } from '@angular/router';
 })
 export class AppProfileMenu {
     router = inject(Router);
+    store = inject(Store);
     logout() {
         // Implement your logout logic here
         console.log('Logout clicked');
-        localStorage.clear();
+        // local storage not work using persistant ngxs
+        // localStorage.clear();
+
+        this.store.dispatch(new ResetTicketState());
         this.router.navigate(['/auth/login']);
     }
 }

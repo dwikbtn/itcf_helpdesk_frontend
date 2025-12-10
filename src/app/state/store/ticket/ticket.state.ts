@@ -1,5 +1,5 @@
 import { State, Action, StateContext, Selector } from '@ngxs/store';
-import { AddTicket, RemoveTicket, ViewSingleTicket, UpdateTicket, LoadTickets } from './ticket.action';
+import { AddTicket, RemoveTicket, ViewSingleTicket, UpdateTicket, LoadTickets, ResetTicketState } from './ticket.action';
 import { Injectable } from '@angular/core';
 
 export interface Ticket {
@@ -102,5 +102,13 @@ export class TicketState {
         const ticket = state.tickets.find((ticket) => ticket.id === action.id);
         ctx.patchState({ viewedTicket: ticket });
         // You can handle the viewed ticket as needed, e.g., set it in the state or perform other actions
+    }
+    @Action(ResetTicketState)
+    resetTicketState(ctx: StateContext<TicketStateModel>) {
+        ctx.setState({
+            tickets: [],
+            viewedTicket: undefined,
+            loading: false
+        });
     }
 }

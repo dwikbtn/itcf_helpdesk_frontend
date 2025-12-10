@@ -27,6 +27,10 @@ export class ViewSingleTicket {
     constructor(public id: string) {}
 }
 
-type TicketActions = LoadTickets | RemoveTicket | AddTicket | UpdateTicket | ViewSingleTicket;
+export class ResetTicketState {
+    static readonly type = '[Ticket] Reset Ticket State';
+}
+
+type TicketActions = LoadTickets | RemoveTicket | AddTicket | UpdateTicket | ViewSingleTicket | ResetTicketState;
 
 export type { TicketActions };

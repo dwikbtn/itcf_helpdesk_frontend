@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
@@ -11,7 +11,7 @@ import { TooltipModule } from 'primeng/tooltip';
         <div class="col-span-1 justify-self-end">
             <div class="bg-[#F3F4F6] p-2">
                 <!-- TODO: Redirect to the ticket based on status -->
-                <span class="pi pi-arrow-up-right hover:cursor-pointer " pTooltip="Redirect to tickets based on status  " tooltipPosition="top"></span>
+                <span class="pi pi-arrow-up-right hover:cursor-pointer " pTooltip="Redirect to tickets based on status  " tooltipPosition="top" (click)="redirectToTicket.emit(ticketStatus)"></span>
             </div>
         </div>
         <div class="col-span-2 text-center mt-4">
@@ -27,4 +27,7 @@ export class TotalTicketCard {
     @Input() iconColor?: string;
     @Input() dataValue: string = '';
     @Input() dataLabel: string = '';
+    @Input() ticketStatus?: 'open' | 'in-progress' | 'closed';
+
+    @Output() redirectToTicket = new EventEmitter<'open' | 'in-progress' | 'closed'>();
 }

@@ -32,7 +32,13 @@ export class TicketList {
     constructor(
         private activatedRoute: ActivatedRoute,
         private messageService: MessageService
-    ) {}
+    ) {
+        this.activatedRoute.queryParams.subscribe((params) => {
+            const status = params['status']; // 'open'
+            this.selectTab(status);
+            console.log('Query param status:', status);
+        });
+    }
 
     private store = inject(Store);
     private router = inject(Router);
