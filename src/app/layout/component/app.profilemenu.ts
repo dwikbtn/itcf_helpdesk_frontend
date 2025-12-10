@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-profilemenu',
@@ -19,8 +20,11 @@ import { CommonModule } from '@angular/common';
     }
 })
 export class AppProfileMenu {
+    router = inject(Router);
     logout() {
         // Implement your logout logic here
         console.log('Logout clicked');
+        localStorage.clear();
+        this.router.navigate(['/auth/login']);
     }
 }
