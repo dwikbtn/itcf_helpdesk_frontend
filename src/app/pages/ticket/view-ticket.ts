@@ -7,6 +7,7 @@ import { Store } from '@ngxs/store';
 import { ActivatedRoute } from '@angular/router';
 import { ViewSingleTicket } from '@/state/store/ticket/ticket.action';
 import { TicketState } from '@/state/store/ticket/ticket.state';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-view-ticket',
@@ -61,6 +62,7 @@ export class ViewTicket {
     constructor(private activatedRoute: ActivatedRoute) {}
 
     store = inject(Store);
+    router = inject(Router);
 
     ticketData = this.store.selectSignal(TicketState.viewedSingleTicket);
 
@@ -106,5 +108,7 @@ export class ViewTicket {
         }
     }
 
-    handleEdit() {}
+    handleEdit() {
+        this.router.navigate(['/ticket/edit', this.ticketData()?.id]);
+    }
 }

@@ -63,13 +63,6 @@ export class TicketState {
     @Action(LoadTickets)
     loadTickets(ctx: StateContext<TicketStateModel>) {
         ctx.patchState({ loading: true });
-        // Simulate an API call
-
-        // const tickets: Ticket[] = [
-        //     { id: '1', title: 'Sample Ticket 1', description: 'Description 1', updatedDate: new Date(), createdDate: new Date(), user: 'User A', status: 'open', priority: 'High', assignee: 'User A' },
-        //     { id: '2', title: 'Sample Ticket 2', description: 'Description 2', updatedDate: new Date(), createdDate: new Date(), user: 'User B', status: 'in progress', priority: 'Medium', assignee: 'User B' }
-        // ];
-        // ctx.patchState({ tickets, loading: false });
         setTimeout(() => {
             const state = ctx.getState();
             ctx.patchState({ tickets: state.tickets, loading: false });

@@ -27,7 +27,7 @@ import { MessageService } from 'primeng/api';
                             <!-- User -->
                             <div class="mb-4">
                                 <label for="user" class="block text-sm font-medium mb-2">User</label>
-                                <input id="user" type="text" pInputText [value]="activeTicket()?.user || ''" readonly class="w-full bg-gray-100" />
+                                <input id="user" type="text" pInputText [value]="activeTicket()?.user || ''" [disabled]="!isITSupport" class="w-full bg-gray-100" />
                             </div>
 
                             <!-- Title -->
