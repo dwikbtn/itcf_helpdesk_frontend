@@ -107,13 +107,11 @@ export class TicketList {
         else this.sortOrder = 'none';
     }
 
-    priorityClass = priorityClass;
-
-    statusClass = statusClass;
-
-    statusLabel = statusLabel;
-
-    formatDate = formatDate;
+    // Utility functions for template
+    readonly priorityClass = priorityClass;
+    readonly statusClass = statusClass;
+    readonly statusLabel = statusLabel;
+    readonly formatDate = formatDate;
 
     viewTicket(ticket: Ticket) {
         // Navigate to ticket detail page
@@ -183,9 +181,9 @@ export class TicketList {
 
         // Apply sorting by name when requested
         if (this.sortOrder === 'asc') {
-            result = result.slice().sort((a, b) => a.user.localeCompare(b.user));
+            result = result.slice().sort((a, b) => a.title.localeCompare(b.title));
         } else if (this.sortOrder === 'desc') {
-            result = result.slice().sort((a, b) => b.user.localeCompare(a.user));
+            result = result.slice().sort((a, b) => b.title.localeCompare(a.title));
         }
 
         return result;

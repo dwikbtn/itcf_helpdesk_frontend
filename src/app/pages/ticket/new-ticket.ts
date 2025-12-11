@@ -37,10 +37,12 @@ import { Ticket } from '@/state/store/ticket/ticket.state';
                 </div>
 
                 <!-- Add assign to -->
-                <div class="flex flex-col gap-2">
-                    <label for="assignee" class="text-sm font-medium text-surface-900 dark:text-surface-0"> Assign To </label>
-                    <p-select id="assignee" [(ngModel)]="ticketData.assignee" [options]="" optionLabel="label" optionValue="value" placeholder="Select a user" class="w-full" />
-                </div>
+                @if (isItSupport) {
+                    <div class="flex flex-col gap-2">
+                        <label for="assignee" class="text-sm font-medium text-surface-900 dark:text-surface-0"> Assign To </label>
+                        <p-select id="assignee" [(ngModel)]="ticketData.assignee" [options]="" optionLabel="label" optionValue="value" placeholder="Select a user" class="w-full" />
+                    </div>
+                }
 
                 <!-- Upload Image -->
                 <div class="flex flex-col gap-2">
@@ -65,6 +67,8 @@ export class NewTicket {
     @Input() visible: boolean = false;
     @Output() visibleChange = new EventEmitter<boolean>();
     @Output() create = new EventEmitter<any>();
+
+    isItSupport = true;
 
     assignees = [
         { label: 'Unassigned', value: '' },
