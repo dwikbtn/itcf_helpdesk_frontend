@@ -73,6 +73,7 @@
     box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
 }
 .search-wrapper {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -85,6 +86,36 @@
     border: none;
     outline: none;
     width: 220px;
+}
+.search-wrapper .search-icon {
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+.search-wrapper ::ng-deep .p-autocomplete {
+    width: 280px;
+}
+.search-wrapper ::ng-deep .p-autocomplete-input {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0.5rem !important;
+    font-size: 0.875rem;
+}
+.search-wrapper ::ng-deep .p-autocomplete-input:focus {
+    box-shadow: none !important;
+}
+.search-wrapper .clear-search-btn {
+    position: absolute;
+    right: 8px;
+    padding: 0.25rem !important;
+    width: 1.5rem !important;
+    height: 1.5rem !important;
+    min-width: unset !important;
+}
+::ng-deep .p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item {
+    padding: 0 !important;
+}
+::ng-deep .p-autocomplete-panel .p-autocomplete-items .p-autocomplete-item:hover {
+    background: #f3f4f6;
 }
 .filter-button.active-filter {
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);

@@ -5,6 +5,8 @@ import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { Popover } from 'primeng/popover';
 import { InputTextModule } from 'primeng/inputtext';
+import { AutoCompleteModule } from 'primeng/autocomplete';
+import { FormsModule } from '@angular/forms';
 import { Filter } from './components/filter';
 import { TicketStatusTab } from './components/ticket-status-tab';
 import { DeleteTicketDialog } from './components/delete-ticket-dialog';
@@ -22,7 +24,7 @@ import { TooltipModule } from 'primeng/tooltip';
 @Component({
     selector: 'app-ticket-list',
     standalone: true,
-    imports: [CommonModule, RouterModule, TableModule, ButtonModule, Popover, InputTextModule, TicketStatusTab, Filter, NewTicket, Toast, DeleteTicketDialog, TooltipModule],
+    imports: [CommonModule, RouterModule, TableModule, ButtonModule, Popover, InputTextModule, AutoCompleteModule, FormsModule, TicketStatusTab, Filter, NewTicket, Toast, DeleteTicketDialog, TooltipModule],
     providers: [MessageService],
     templateUrl: './template/ticket-list.html',
 
@@ -159,6 +161,74 @@ export class TicketList {
     }
 
     searchQuery: string = '';
+    searchSuggestions: any[] = [];
+    recentSearches: string[] = [];
+
+    // Autocomplete search method
+    searchTickets(event: any) {
+        const query = event.query.toLowerCase();
+
+        if (!query) {
+            // Show recent searches when no query
+            this.searchSuggestions = this.recentSearches.map((term) => ({
+                label: term,
+                value: term,
+                type: 'recent'
+            }));
+            return;
+        }
+
+        // Get unique suggestions from tickets
+        const suggestions = new Set<string>();
+
+        this.tickets().forEach((ticket) => {
+            // Add matching ticket IDs
+            if (ticket.id.toLowerCase().includes(query)) {
+                suggestions.add(ticket.id);
+            }
+            // Add matching titles
+            if (ticket.title.toLowerCase().includes(query)) {
+                suggestions.add(ticket.title);
+            }
+            // Add matching users
+            if (ticket.user.toLowerCase().includes(query)) {
+                suggestions.add(ticket.user);
+            }
+        });
+
+        // Convert to suggestion objects with metadata
+        this.searchSuggestions = Array.from(suggestions)
+            .slice(0, 10)
+            .map((term) => {
+                const matchingTicket = this.tickets().find((t) => t.id === term || t.title === term || t.user === term);
+
+                return {
+                    label: term,
+                    value: term,
+                    type: matchingTicket ? 'ticket' : 'text',
+                    ticket: matchingTicket
+                };
+            });
+    }
+
+    onSelectSearch(event: any) {
+        const value = typeof event === 'string' ? event : event.value;
+        this.searchQuery = value;
+
+        // Add to recent searches (max 5)
+        if (value && !this.recentSearches.includes(value)) {
+            this.recentSearches.unshift(value);
+            if (this.recentSearches.length > 5) {
+                this.recentSearches.pop();
+            }
+            // Optionally save to localStorage
+            localStorage.setItem('ticketSearchHistory', JSON.stringify(this.recentSearches));
+        }
+    }
+
+    clearSearch() {
+        this.searchQuery = '';
+    }
 
     get filteredTickets() {
         const q = this.searchQuery.trim().toLowerCase();
@@ -207,6 +277,12 @@ export class TicketList {
             }
         }
         this.store.dispatch(new LoadTickets());
+
+        // Load recent searches from localStorage
+        const saved = localStorage.getItem('ticketSearchHistory');
+        if (saved) {
+            this.recentSearches = JSON.parse(saved);
+        }
     }
 
     ngOnDestroy(): void {

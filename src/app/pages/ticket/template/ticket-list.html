@@ -7,8 +7,37 @@
 
         <div class="controls flex items-center gap-3" style="position: relative">
             <div class="search-wrapper">
-                <i class="pi pi-search search-icon pr-4"></i>
-                <input pInputText type="text" placeholder="Search" (input)="onSearch($event)" />
+                <i class="pi pi-search search-icon"></i>
+                <p-autoComplete
+                    [(ngModel)]="searchQuery"
+                    [suggestions]="searchSuggestions"
+                    (completeMethod)="searchTickets($event)"
+                    (onSelect)="onSelectSearch($event)"
+                    placeholder="Search tickets, users, IDs..."
+                    [minLength]="0"
+                    [showEmptyMessage]="true"
+                    emptyMessage="No results found"
+                    styleClass="w-full"
+                    inputStyleClass="w-full"
+                >
+                    <ng-template let-item pTemplate="item">
+                        <div class="flex items-center gap-2 p-2">
+                            <i
+                                class="pi"
+                                [ngClass]="{
+                                'pi-clock': item.type === 'recent',
+                                'pi-ticket': item.type === 'ticket',
+                                'pi-search': item.type === 'text'
+                            }"
+                            ></i>
+                            <div class="flex-1">
+                                <div class="font-semibold">{{ item.label }}</div>
+                                <div *ngIf="item.ticket" class="text-xs text-gray-500">{{ item.ticket.user }} • {{ item.ticket.priority }} • {{ statusLabel(item.ticket.status) }}</div>
+                            </div>
+                        </div>
+                    </ng-template>
+                </p-autoComplete>
+                <button *ngIf="searchQuery" pButton type="button" icon="pi pi-times" class="p-button-text p-button-sm clear-search-btn" (click)="clearSearch()" pTooltip="Clear search" tooltipPosition="bottom"></button>
             </div>
 
             <button pButton type="button" class="p-button-outlined filter-button" [class.active-filter]="selectedPriorities.size > 0 " aria-label="Filter" (click)="toggleFilter($event)" pTooltip="Filter by priority" tooltipPosition="bottom">
