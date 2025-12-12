@@ -63,9 +63,9 @@ import { Router } from '@angular/router';
                             <div class="flex flex-col gap-3">
                                 <label class="text-sm font-medium text-surface-900 dark:text-surface-0"> Attachments </label>
                                 <div class="flex gap-2">
-                                    <p-fileupload mode="basic" name="image" accept="image/*" [maxFileSize]="5000000" [auto]="true" chooseLabel="Upload Image" (onSelect)="onImageSelect($event)" styleClass="flex-1" chooseIcon="pi pi-image">
+                                    <p-fileupload mode="basic" name="image" accept="image/*" [maxFileSize]="5000000" [auto]="true" chooseLabel="Upload Attatchment" (onSelect)="onImageSelect($event)" styleClass="flex-1" chooseIcon="pi pi-image">
                                     </p-fileupload>
-                                    <p-fileupload
+                                    <!-- <p-fileupload
                                         mode="basic"
                                         name="attachment"
                                         accept=".pdf,.doc,.docx"
@@ -76,9 +76,9 @@ import { Router } from '@angular/router';
                                         styleClass="flex-1"
                                         chooseIcon="pi pi-file"
                                     >
-                                    </p-fileupload>
+                                    </p-fileupload> -->
                                 </div>
-                                <small class="text-surface-500">Images: JPG, PNG, GIF (max 5MB) • Documents: PDF, DOC, DOCX (max 10MB)</small>
+                                <!-- <small class="text-surface-500">Images: JPG, PNG, GIF (max 5MB) • Documents: PDF, DOC, DOCX (max 10MB)</small> -->
                             </div>
                         </div>
                     </div>
