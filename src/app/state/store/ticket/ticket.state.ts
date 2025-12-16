@@ -100,10 +100,13 @@ export class TicketState {
 
     @Action(ViewSingleTicket)
     viewTicket(ctx: StateContext<TicketStateModel>, action: ViewSingleTicket) {
-        const state = ctx.getState();
-        const ticket = state.tickets.find((ticket) => ticket.id === action.id);
-        ctx.patchState({ viewedTicket: ticket });
-        // You can handle the viewed ticket as needed, e.g., set it in the state or perform other actions
+        ctx.patchState({ loading: true });
+        //NOTE: Simulating async fetch with setTimeout
+        setTimeout(() => {
+            const state = ctx.getState();
+            const ticket = state.tickets.find((ticket) => ticket.id === action.id);
+            ctx.patchState({ viewedTicket: ticket, loading: false });
+        }, 1000);
     }
     @Action(ResetTicketState)
     resetTicketState(ctx: StateContext<TicketStateModel>) {

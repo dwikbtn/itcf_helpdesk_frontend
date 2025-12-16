@@ -10,26 +10,44 @@ import { TicketState } from '@/state/store/ticket/ticket.state';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+import { SkeletonModule } from 'primeng/skeleton';
 
 @Component({
     selector: 'app-view-ticket',
     providers: [MessageService],
     template: `<p-toast></p-toast>
-        <section class="mb-4 card" *ngIf="ticketData(); else loading">
+        <section class="mb-4 card">
             <div class="flex mb-7">
                 <div class="flex flex-col">
-                    <h2 class="mb-2">{{ ticketData()?.title }}</h2>
-                    <div class="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                        Ticket from: <span class="font-medium text-slate-700 dark:text-slate-300">{{ ticketData()?.user }}</span>
-                    </div>
-                    <div class="flex gap-4 text-sm text-gray-600 dark:text-gray-400">
-                        <div><span class="font-medium">Created:</span> {{ ticketData()?.createdDate | date }}</div>
-                        <div><span class="font-medium">Updated:</span> {{ ticketData()?.updatedDate | date }}</div>
-                    </div>
-                    <div class="flex gap-2 mt-3">
-                        <p-badge [value]="ticketData()?.status || ''" badgeSize="large" [severity]="statusColor" />
-                        <p-badge [value]="ticketData()?.priority || ''" badgeSize="large" [severity]="priorityColor" />
-                    </div>
+                    @defer (when !loading()) {
+                        <h2 class="mb-2">{{ ticketData()?.title }}</h2>
+                        <div class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                            Ticket from: <span class="font-medium text-slate-700 dark:text-slate-300">{{ ticketData()?.user }}</span>
+                        </div>
+                        <div class="flex gap-4 text-sm text-gray-600 dark:text-gray-400">
+                            <div><span class="font-medium">Created:</span> {{ ticketData()?.createdDate | date }}</div>
+                            <div><span class="font-medium">Updated:</span> {{ ticketData()?.updatedDate | date }}</div>
+                        </div>
+                        <div class="flex gap-2 mt-3">
+                            <p-badge [value]="ticketData()?.status || ''" badgeSize="large" [severity]="statusColor" />
+                            <p-badge [value]="ticketData()?.priority || ''" badgeSize="large" [severity]="priorityColor" />
+                        </div>
+                    } @placeholder (minimum 500ms) {
+                        <h2 class="mb-2">
+                            <p-skeleton width="60%"></p-skeleton>
+                        </h2>
+                        <div class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                            Ticket from: <span class="font-medium text-slate-700 dark:text-slate-300"><p-skeleton width="100px"></p-skeleton></span>
+                        </div>
+                        <div class="flex gap-4 text-sm text-gray-600 dark:text-gray-400">
+                            <div><span class="font-medium">Created:</span> <p-skeleton width="120px"></p-skeleton></div>
+                            <div><span class="font-medium">Updated:</span> <p-skeleton width="120px"></p-skeleton></div>
+                        </div>
+                        <div class="flex gap-2 mt-3">
+                            <p-skeleton width="80px" height="24px"></p-skeleton>
+                            <p-skeleton width="80px" height="24px"></p-skeleton>
+                        </div>
+                    }
                 </div>
                 <!-- action group button here -->
                 <div class="button-group ml-auto flex gap-2 items-start">
@@ -41,7 +59,11 @@ import { ToastModule } from 'primeng/toast';
             <!-- description section -->
             <div class="mt-4">
                 <h3 class="text-lg font-semibold mb-2">Ticket Description</h3>
-                <p class="text-surface-700 dark:text-surface-300">{{ ticketData()?.description }}</p>
+                @defer (when !loading()) {
+                    <p class="text-surface-700 dark:text-surface-300">{{ ticketData()?.description }}</p>
+                } @placeholder (minimum 500ms) {
+                    <p-skeleton width="100%" height="80px"></p-skeleton>
+                }
             </div>
             <!-- image attachments section -->
             <div class="mt-6" *ngIf="ticketData()?.imageListUrls && ticketData()!.imageListUrls!.length > 0">
@@ -52,15 +74,8 @@ import { ToastModule } from 'primeng/toast';
                     </a>
                 </div>
             </div>
-        </section>
-        <ng-template #loading>
-            <section class="mb-4 card">
-                <div class="text-center py-8">
-                    <p class="text-gray-600 dark:text-gray-400">Loading ticket data...</p>
-                </div>
-            </section>
-        </ng-template>`,
-    imports: [ButtonDirective, Badge, DividerModule, CommonModule, ToastModule]
+        </section> `,
+    imports: [ButtonDirective, Badge, DividerModule, CommonModule, ToastModule, SkeletonModule]
 })
 export class ViewTicket {
     constructor(private activatedRoute: ActivatedRoute) {}
@@ -70,6 +85,7 @@ export class ViewTicket {
     messageService = inject(MessageService);
 
     ticketData = this.store.selectSignal(TicketState.viewedSingleTicket);
+    loading = this.store.selectSignal(TicketState.loading);
 
     ngOnInit() {
         const ticketId = this.activatedRoute.snapshot.paramMap.get('id');
