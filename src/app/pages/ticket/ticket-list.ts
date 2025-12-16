@@ -19,11 +19,12 @@ import { Toast } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { TooltipModule } from 'primeng/tooltip';
+import { TicketSkeleton } from './template/ticket-skeleton';
 
 @Component({
     selector: 'app-ticket-list',
     standalone: true,
-    imports: [CommonModule, RouterModule, TableModule, ButtonModule, Popover, InputTextModule, AutoCompleteModule, FormsModule, TicketStatusTab, Filter, Toast, DeleteTicketDialog, TooltipModule],
+    imports: [CommonModule, RouterModule, TableModule, ButtonModule, Popover, InputTextModule, AutoCompleteModule, FormsModule, TicketStatusTab, Filter, Toast, DeleteTicketDialog, TooltipModule, TicketSkeleton],
     providers: [MessageService],
     templateUrl: './template/ticket-list.html',
 
@@ -45,6 +46,7 @@ export class TicketList {
     private router = inject(Router);
     //ticket state using signals
     tickets = this.store.selectSignal(TicketState.tickets);
+    loading = this.store.selectSignal(TicketState.loading);
 
     selectedTab: 'all' | 'open' | 'in-progress' | 'closed' = 'all';
 

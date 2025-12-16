@@ -74,6 +74,8 @@
         </ng-template>
 
         <ng-template pTemplate="body" let-ticket>
+            @defer (when !loading()) {
+
             <tr>
                 <td>{{ ticket.id }}</td>
                 <td>
@@ -82,7 +84,7 @@
                 </td>
                 <!-- <td>{{ ticket.category }}</td> -->
                 <!-- <td>{{ formatDate(ticket.createdDate) }}</td>
-                        <td>{{ formatDate(ticket.updatedDate) }}</td> -->
+                            <td>{{ formatDate(ticket.updatedDate) }}</td> -->
                 <td>{{ ticket.user }}</td>
                 <td>
                     <span class="priority-badge" [ngClass]="priorityClass(ticket.priority)">{{ ticket.priority }}</span>
@@ -107,6 +109,11 @@
                     </div>
                 </td>
             </tr>
+            } @placeholder {
+            <tr app-ticket-skeleton></tr>
+            <tr app-ticket-skeleton></tr>
+            <tr app-ticket-skeleton></tr>
+            }
         </ng-template>
     </p-table>
 </section>
