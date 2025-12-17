@@ -1,9 +1,9 @@
-export class LoadMonthlyStats {
-    static readonly type = '[Dashboard] Load Monthly Stats';
+export class FetchMonthlyStats {
+    static readonly type = '[Dashboard] Fetch Monthly Stats';
 }
 
-export class LoadTicketByStatus {
-    static readonly type = '[Dashboard] Load Weekly Stats';
+export class FetchTicketByStatus {
+    static readonly type = '[Dashboard] Fetch Ticket By Status';
 }
 
 export class OverallTicketStats {

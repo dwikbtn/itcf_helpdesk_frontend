@@ -1,13 +1,16 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, computed } from '@angular/core';
 import { Fluid } from 'primeng/fluid';
 import { ChartModule } from 'primeng/chart';
 import { TotalTicketCard } from './components/totalTicketCard';
 import { Router } from '@angular/router';
 import { Store } from '@ngxs/store';
 import { TicketState } from '@/state/store/ticket/ticket.state';
+import { DashboardState } from '@/state/store/dashboard/dashboard.state';
+import { FetchMonthlyStats, FetchTicketByStatus } from '@/state/store/dashboard/dashboard.action';
+import { SkeletonModule } from 'primeng/skeleton';
 @Component({
     selector: 'app-dashboard',
-    imports: [Fluid, ChartModule, TotalTicketCard],
+    imports: [Fluid, ChartModule, TotalTicketCard, SkeletonModule],
     template: `
         <section class="mb-4">
             <div class="text-3xl font-bold mb-2">Dashboard</div>
@@ -18,17 +21,29 @@ import { TicketState } from '@/state/store/ticket/ticket.state';
                 <div class="col-span-12 xl:col-span-6">
                     <div class="card flex flex-col" style="height:420px">
                         <div class="font-semibold text-xl mb-4">Monthly Ticket Overview</div>
-                        <div class="flex-1">
-                            <p-chart type="bar" [data]="monthlyData" [options]="monthlyOptions" style="height:100%"></p-chart>
-                        </div>
+                        @defer (when !monthlyStatsLoading()) {
+                            <div class="flex-1">
+                                <p-chart type="bar" [data]="monthlyData()" [options]="monthlyOptions" style="height:100%"></p-chart>
+                            </div>
+                        } @placeholder (minimum 500ms) {
+                            <div class="flex-1 flex justify-center items-center">
+                                <p-skeleton width="100%" height="300px"></p-skeleton>
+                            </div>
+                        }
                     </div>
                 </div>
                 <div class="col-span-12 xl:col-span-6">
                     <div class="card flex flex-col" style="height:420px">
                         <div class="font-semibold text-xl mb-4">Tickets by Status</div>
-                        <div class="flex-1">
-                            <p-chart type="doughnut" [data]="ticketStatusData" [options]="ticketStatusOptions" style="height:100%"></p-chart>
-                        </div>
+                        @defer (when !ticketByStatusLoading()) {
+                            <div class="flex-1">
+                                <p-chart type="doughnut" [data]="ticketStatusData()" [options]="ticketStatusOptions" style="height:100%"></p-chart>
+                            </div>
+                        } @placeholder (minimum 500ms) {
+                            <div class="flex-1 flex justify-center items-center">
+                                <p-skeleton width="100%" height="300px"></p-skeleton>
+                            </div>
+                        }
                     </div>
                 </div>
             </p-fluid>
@@ -60,6 +75,12 @@ export class Dashboard {
     private store = inject(Store);
     ticketData = this.store.selectSignal(TicketState.tickets);
 
+    monthlyStats = this.store.selectSignal(DashboardState.monthlyStats);
+    monthlyStatsLoading = this.store.selectSignal(DashboardState.monthlyStatsloading);
+
+    ticketByStatus = this.store.selectSignal(DashboardState.ticketByStatus);
+    ticketByStatusLoading = this.store.selectSignal(DashboardState.ticketByStatusLoading);
+
     get totalTickets() {
         return this.ticketData().length;
     }
@@ -74,16 +95,56 @@ export class Dashboard {
         return this.ticketData().filter((t) => t.status === 'closed').length;
     }
 
-    monthlyData = {};
+    // monthlyData = {};
     monthlyOptions = {};
 
-    ticketStatusData = {};
     ticketStatusOptions = {};
 
     onRedirectToTicketPage(redirectTo: 'open' | 'in-progress' | 'closed' | 'all') {
         console.log(redirectTo, 'redirectTo');
         this.router.navigate([`/ticket`], { queryParams: { status: redirectTo } });
     }
+
+    monthlyData = computed(() => {
+        const stats = this.monthlyStats();
+        return {
+            labels: stats.labels,
+            datasets: [
+                {
+                    label: 'Open',
+                    backgroundColor: '#FECACA',
+                    borderColor: '#FECACA',
+                    data: stats.open
+                },
+                {
+                    label: 'On Progress',
+                    backgroundColor: '#BAE6FD',
+                    borderColor: '#BAE6FD',
+                    data: stats.onProgress
+                },
+                {
+                    label: 'Closed',
+                    backgroundColor: '#BBF7D0',
+                    borderColor: '#BBF7D0',
+                    data: stats.closed
+                }
+            ]
+        };
+    });
+
+    ticketStatusData = computed(() => {
+        const status = this.ticketByStatus();
+        return {
+            labels: ['Open', 'On Progress', 'Closed'],
+            datasets: [
+                {
+                    data: [status.open, status.inProgress, status.closed],
+                    backgroundColor: ['#FECACA', '#BAE6FD', '#BBF7D0'],
+                    hoverBackgroundColor: ['#FCA5A5', '#7DD3FC', '#86EFAC']
+                }
+            ]
+        };
+    });
 
     ngOnInit() {
         this.initCharts();
@@ -95,29 +156,10 @@ export class Dashboard {
         const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
         const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
 
-        this.monthlyData = {
-            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-            datasets: [
-                {
-                    label: 'Open',
-                    backgroundColor: '#FECACA',
-                    borderColor: '#FECACA',
-                    data: [10, 9, 8, 7, 6, 5, 4]
-                },
-                {
-                    label: 'On Progress',
-                    backgroundColor: '#BAE6FD',
-                    borderColor: '#BAE6FD',
-                    data: [2, 4, 6, 8, 10, 12, 14]
-                },
-                {
-                    label: 'Closed',
-                    backgroundColor: '#BBF7D0',
-                    borderColor: '#BBF7D0',
-                    data: [12, 14, 16, 18, 20, 22, 24]
-                }
-            ]
-        };
+        this.store.dispatch(new FetchMonthlyStats());
+        this.store.dispatch(new FetchTicketByStatus());
+
+        console.log(this.monthlyStats(), 'monthly data');
 
         this.monthlyOptions = {
             maintainAspectRatio: false,
@@ -163,16 +205,16 @@ export class Dashboard {
             }
         };
 
-        this.ticketStatusData = {
-            labels: ['Open', 'On Progress', 'Closed'],
-            datasets: [
-                {
-                    data: [8, 5, 12],
-                    backgroundColor: ['#FECACA', '#BAE6FD', '#BBF7D0'],
-                    hoverBackgroundColor: ['#FCA5A5', '#7DD3FC', '#86EFAC']
-                }
-            ]
-        };
+        // this.ticketStatusData = {
+        //     labels: ['Open', 'On Progress', 'Closed'],
+        //     datasets: [
+        //         {
+        //             data: [8, 5, 12],
+        //             backgroundColor: ['#FECACA', '#BAE6FD', '#BBF7D0'],
+        //             hoverBackgroundColor: ['#FCA5A5', '#7DD3FC', '#86EFAC']
+        //         }
+        //     ]
+        // };
 
         this.ticketStatusOptions = {
             maintainAspectRatio: false,

@@ -14,6 +14,7 @@ import { withNgxsWebSocketPlugin } from '@ngxs/websocket-plugin';
 import { provideStore } from '@ngxs/store';
 import { TicketState } from './app/state/store/ticket/ticket.state';
 import { AuthState } from '@/state/store/auth/auth.state';
+import { DashboardState } from '@/state/store/dashboard/dashboard.state';
 
 export const appConfig: ApplicationConfig = {
     providers: [
@@ -21,6 +22,6 @@ export const appConfig: ApplicationConfig = {
         provideHttpClient(withFetch()),
         provideAnimationsAsync(),
         providePrimeNG({ theme: { preset: Aura, options: { darkModeSelector: '.app-dark' } } }),
-        provideStore([TicketState, AuthState], withNgxsReduxDevtoolsPlugin(), withNgxsFormPlugin(), withNgxsLoggerPlugin(), withNgxsRouterPlugin(), withNgxsStoragePlugin({ keys: [TicketState, AuthState] }), withNgxsWebSocketPlugin())
+        provideStore([TicketState, AuthState, DashboardState], withNgxsReduxDevtoolsPlugin(), withNgxsFormPlugin(), withNgxsLoggerPlugin(), withNgxsRouterPlugin(), withNgxsStoragePlugin({ keys: [TicketState, AuthState] }), withNgxsWebSocketPlugin())
     ]
 };
