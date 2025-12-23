@@ -4,7 +4,7 @@ import { ChartModule } from 'primeng/chart';
 import { TotalTicketCard } from './components/totalTicketCard';
 import { Router } from '@angular/router';
 import { Store } from '@ngxs/store';
-import { TicketState } from '@/state/store/ticket/ticket.state';
+import { TicketState, TicketStatus } from '@/state/store/ticket/ticket.state';
 import { DashboardState } from '@/state/store/dashboard/dashboard.state';
 import { FetchMonthlyStats, FetchTicketByStatus } from '@/state/store/dashboard/dashboard.action';
 import { SkeletonModule } from 'primeng/skeleton';
@@ -86,13 +86,13 @@ export class Dashboard {
     }
 
     get openTickets() {
-        return this.ticketData().filter((t) => t.status === 'open').length;
+        return this.ticketData().filter((t) => t.status === TicketStatus.OPEN).length;
     }
     get inProgressTickets() {
-        return this.ticketData().filter((t) => t.status === 'in-progress').length;
+        return this.ticketData().filter((t) => t.status === TicketStatus.IN_PROGRESS).length;
     }
     get closedTickets() {
-        return this.ticketData().filter((t) => t.status === 'closed').length;
+        return this.ticketData().filter((t) => t.status === TicketStatus.CLOSED).length;
     }
 
     // monthlyData = {};

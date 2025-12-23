@@ -11,7 +11,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Store } from '@ngxs/store';
 import { AddTicket } from '@/state/store/ticket/ticket.action';
-import { Ticket } from '@/state/store/ticket/ticket.state';
+import { Priority, Ticket, TicketStatus } from '@/state/store/ticket/ticket.state';
 import { Router } from '@angular/router';
 import { handleMultipleImageSelect, removeImageFromArray, cleanupImagePreviews, ImageUpload, formatFileSize } from './ticket.utils';
 
@@ -189,9 +189,9 @@ export class NewTicket {
         private messageService: MessageService
     ) {}
 
-    selectedPriority: string = '';
-    selectedStatus: Ticket['status'] = 'open';
-    selectedAssignee: string = '';
+    selectedPriority: Ticket['priority'] = Priority.MEDIUM;
+    selectedStatus: Ticket['status'] = TicketStatus.OPEN;
+    selectedAssignee: Ticket['assignee'];
     selectedUser: string = '';
     selectedTitle: string = '';
     selectedDescription: string = '';
@@ -239,7 +239,7 @@ export class NewTicket {
         this.router.navigate(['ticket/']);
     }
 
-    isItSupport = false;
+    isItSupport = true;
 
     assignees = [
         { label: 'Unassigned', value: '' },
@@ -306,13 +306,11 @@ export class NewTicket {
         this.showValidation = true;
         if (this.isFormValid()) {
             const ticketData: Ticket = {
-                user: this.selectedUser,
                 title: this.selectedTitle,
                 description: this.selectedDescription,
                 priority: this.selectedPriority,
                 status: this.selectedStatus,
                 assignee: this.selectedAssignee,
-                effort: this.selectedEffort,
                 id: Date.now().toString(),
                 createdDate: new Date()
             };

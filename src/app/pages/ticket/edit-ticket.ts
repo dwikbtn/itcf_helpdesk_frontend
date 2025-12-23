@@ -1,5 +1,5 @@
 import { ViewSingleTicket, UpdateTicket } from '@/state/store/ticket/ticket.action';
-import { Ticket, TicketState } from '@/state/store/ticket/ticket.state';
+import { Priority, Ticket, TicketState, TicketStatus } from '@/state/store/ticket/ticket.state';
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngxs/store';
@@ -29,7 +29,7 @@ import { formatFileSize, handleImageSelect, handleMultipleImageSelect, ImageUplo
                             <!-- User -->
                             <div class="mb-4">
                                 <label for="user" class="block text-sm font-medium mb-2">User</label>
-                                <input id="user" type="text" pInputText [value]="activeTicket()?.user || ''" [disabled]="!isITSupport" class="w-full bg-gray-100" />
+                                <input id="user" type="text" pInputText [value]="activeTicket()?.requester?.userName || ''" [disabled]="!isITSupport" class="w-full bg-gray-100" />
                             </div>
 
                             <!-- Title -->
@@ -149,12 +149,12 @@ export class EditTicket {
     originalDescription: string = '';
     originalPriority: string = '';
     originalStatus: string = '';
-    originalAssignee: string = '';
+    originalAssignee: Ticket['assignee'] = {} as Ticket['assignee'];
 
     // Current form values
-    selectedPriority: string = '';
-    selectedStatus: string = '';
-    selectedAssignee: string = '';
+    selectedPriority: Ticket['priority'] = Priority.HIGH;
+    selectedStatus: Ticket['status'] = TicketStatus.OPEN;
+    selectedAssignee: Ticket['assignee'] = {} as Ticket['assignee'];
     selectedUser: string = '';
     selectedTitle: string = '';
     selectedDescription: string = '';
@@ -231,7 +231,6 @@ export class EditTicket {
         // Initialize all form values from active ticket
         const ticket = this.activeTicket();
         if (ticket) {
-            this.selectedUser = ticket.user;
             this.selectedTitle = ticket.title;
             this.selectedDescription = ticket.description;
             this.selectedPriority = ticket.priority!;
@@ -270,9 +269,9 @@ export class EditTicket {
                 title: this.selectedTitle,
                 description: this.selectedDescription,
                 priority: this.selectedPriority,
-                status: this.selectedStatus as 'open' | 'in-progress' | 'closed',
+                status: this.selectedStatus as Ticket['status'],
                 assignee: this.selectedAssignee,
-                user: this.activeTicket()?.user || '',
+                requester: this.activeTicket()?.requester || ({} as Ticket['requester']),
                 createdDate: this.activeTicket()?.createdDate || new Date(),
                 updatedDate: new Date()
             };

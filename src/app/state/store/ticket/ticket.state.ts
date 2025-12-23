@@ -5,16 +5,48 @@ import { Injectable } from '@angular/core';
 export interface Ticket {
     id: string;
     title: string;
-    updatedDate?: Date;
-    createdDate: Date;
     description: string;
-    user: string;
-    status: 'open' | 'in-progress' | 'closed';
-    imageListUrls?: string[];
-    attatchmentList?: string[];
-    priority?: string;
-    assignee?: string;
-    effort?: string;
+    updatedDate?: Date;
+    updatedBy?: string;
+    createdDate: Date;
+    status: TicketStatus;
+    attachment?: Attachment[];
+    priority?: Priority;
+    assignee?: User;
+    requester?: User;
+    userNextLevel?: any;
+    inputDate?: Date;
+    inputBy?: string;
+    closeBy?: string;
+    closeDate?: Date;
+    category?: {
+        id: string;
+        name: string;
+    };
+    comments?: Comment[];
+    ticketHistory?: TicketHistory[];
+}
+
+export enum TicketStatus {
+    OPEN = 'OPEN',
+    IN_PROGRESS = 'IN_PROGRESS',
+    CLOSED = 'CLOSED',
+    PENDING = 'PENDING',
+    RESOLVED = 'RESOLVED'
+}
+
+export enum Priority {
+    LOW = 'LOW',
+    MEDIUM = 'MEDIUM',
+    HIGH = 'HIGH',
+    URGENT = 'URGENT'
+}
+interface User {
+    id: string;
+    userName: string;
+    fullName: string;
+    role: 'IT' | 'USER' | 'ADMIN';
+    createdAt: Date;
 }
 
 interface TicketStateModel {
@@ -23,12 +55,51 @@ interface TicketStateModel {
     loading: boolean;
 }
 
+interface Comment {
+    id: string;
+    body: string;
+    isInternal: boolean;
+    createdTime: Date;
+    author: User;
+}
+
+interface Attachment {
+    id: string;
+    fileName: string;
+    fileType: string;
+    url: string;
+    createdAt: Date;
+}
+
+interface TicketHistory {
+    id: string;
+    changeField: string;
+    oldValue: string;
+    newValue: string;
+    changedAt: Date;
+}
+
 @State<TicketStateModel>({
     name: 'ticketState',
     defaults: {
         tickets: [
-            { id: '1', title: 'Sample Ticket 1', description: 'Description 1', updatedDate: new Date(), createdDate: new Date(), user: 'User A', status: 'open', priority: 'High', assignee: 'User A' },
-            { id: '2', title: 'Sample Ticket 2', description: 'Description 2', updatedDate: new Date(), createdDate: new Date(), user: 'User B', status: 'in progress', priority: 'Medium', assignee: 'User B' }
+            {
+                id: '1',
+                title: 'Sample Ticket 1',
+                description: 'Description 1',
+                updatedDate: new Date(),
+                createdDate: new Date(),
+
+                status: TicketStatus.OPEN,
+                priority: Priority.HIGH,
+                assignee: {
+                    id: 'u2',
+                    userName: 'user2',
+                    fullName: 'User Two',
+                    role: 'IT',
+                    createdAt: new Date()
+                }
+            }
         ] as Ticket[],
         viewedTicket: {
             id: '',
@@ -36,11 +107,10 @@ interface TicketStateModel {
             description: '',
             updatedDate: new Date(),
             createdDate: new Date(),
-            user: '',
-            status: 'open',
-            priority: '',
-            assignee: '',
-            imageListUrls: []
+            status: TicketStatus.OPEN,
+            priority: Priority.HIGH,
+            assignee: {} as User,
+            attachment: []
         } as Ticket,
         loading: false
     }

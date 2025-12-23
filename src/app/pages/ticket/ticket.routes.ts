@@ -3,10 +3,12 @@ import { TicketList } from './ticket-list';
 import { ViewTicket } from './view-ticket';
 import { EditTicket } from './edit-ticket';
 import { NewTicket } from './new-ticket';
+import { ResponseTicket } from './response-ticket';
 
 export default [
     { path: '', component: TicketList },
     { path: 'new', component: NewTicket },
     { path: 'view/:id', component: ViewTicket },
-    { path: 'edit/:id', component: EditTicket }
+    { path: 'edit/:id', component: EditTicket },
+    { path: 'response/:id', component: ResponseTicket }
 ] as Routes;

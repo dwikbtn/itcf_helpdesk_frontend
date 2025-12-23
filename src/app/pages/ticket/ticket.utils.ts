@@ -1,4 +1,4 @@
-import { Ticket } from '@/state/store/ticket/ticket.state';
+import { Priority, Ticket, TicketStatus } from '@/state/store/ticket/ticket.state';
 
 export function formatDate(date: Date | undefined): string {
     if (!date) return '-';
@@ -18,28 +18,32 @@ export function formatDate(date: Date | undefined): string {
 
 export function statusLabel(status: Ticket['status']) {
     switch (status) {
-        case 'open':
+        case TicketStatus.OPEN:
             return 'Open';
-        case 'in-progress':
+        case TicketStatus.IN_PROGRESS:
             return 'In Progress';
-        case 'closed':
+        case TicketStatus.CLOSED:
             return 'Closed';
+        case TicketStatus.PENDING:
+            return 'Pending';
+        case TicketStatus.RESOLVED:
+            return 'Resolved';
     }
 }
 
 export function priorityClass(priority: Ticket['priority']) {
     return {
-        'priority-high': priority === 'High',
-        'priority-medium': priority === 'Medium',
-        'priority-low': priority === 'Low'
+        'priority-high': priority === Priority.HIGH,
+        'priority-medium': priority === Priority.MEDIUM,
+        'priority-low': priority === Priority.LOW
     };
 }
 
 export function statusClass(status: Ticket['status']) {
     return {
-        'status-open': status === 'open',
-        'status-in-progress': status === 'in-progress',
-        'status-closed': status === 'closed'
+        'status-open': status === TicketStatus.OPEN,
+        'status-in-progress': status === TicketStatus.IN_PROGRESS,
+        'status-closed': status === TicketStatus.CLOSED
     };
 }
 

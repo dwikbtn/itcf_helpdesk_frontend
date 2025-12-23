@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
 import { Store } from '@ngxs/store';
 import { ActivatedRoute } from '@angular/router';
 import { UpdateTicket, ViewSingleTicket } from '@/state/store/ticket/ticket.action';
-import { TicketState } from '@/state/store/ticket/ticket.state';
+import { Priority, TicketState, TicketStatus } from '@/state/store/ticket/ticket.state';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
@@ -22,7 +22,7 @@ import { SkeletonModule } from 'primeng/skeleton';
                     @defer (when !loading()) {
                         <h2 class="mb-2">{{ ticketData()?.title }}</h2>
                         <div class="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                            Ticket from: <span class="font-medium text-slate-700 dark:text-slate-300">{{ ticketData()?.user }}</span>
+                            Ticket from: <span class="font-medium text-slate-700 dark:text-slate-300">{{ ticketData()?.requester?.userName }}</span>
                         </div>
                         <div class="flex gap-4 text-sm text-gray-600 dark:text-gray-400">
                             <div><span class="font-medium">Created:</span> {{ ticketData()?.createdDate | date }}</div>
@@ -66,14 +66,14 @@ import { SkeletonModule } from 'primeng/skeleton';
                 }
             </div>
             <!-- image attachments section -->
-            <div class="mt-6" *ngIf="ticketData()?.imageListUrls && ticketData()!.imageListUrls!.length > 0">
+            <!-- <div class="mt-6" *ngIf="ticketData()?.imageListUrls && ticketData()!.imageListUrls!.length > 0">
                 <h3 class="text-lg font-semibold mb-2">Image Attachments</h3>
                 <div class="flex flex-wrap gap-4">
                     <a *ngFor="let img of ticketData()!.imageListUrls" [href]="img" target="_blank" rel="noopener noreferrer" class="border rounded-md overflow-hidden w-40 h-40 cursor-pointer hover:opacity-80 transition-opacity">
                         <img [src]="img" alt="Attachment" class="w-full h-full object-cover" />
                     </a>
                 </div>
-            </div>
+            </div> -->
         </section> `,
     imports: [ButtonDirective, Badge, DividerModule, CommonModule, ToastModule, SkeletonModule]
 })
@@ -102,11 +102,13 @@ export class ViewTicket {
         if (!priority) return 'secondary';
 
         switch (priority) {
-            case 'High':
+            case Priority.URGENT:
+                return 'danger'; // red
+            case Priority.HIGH:
                 return 'success'; // green
-            case 'Medium':
+            case Priority.MEDIUM:
                 return 'info'; // blue
-            case 'Low':
+            case Priority.LOW:
                 return 'secondary'; // gray
             default:
                 return 'secondary';
@@ -118,11 +120,13 @@ export class ViewTicket {
         if (!status) return 'secondary';
 
         switch (status) {
-            case 'open':
+            case TicketStatus.RESOLVED:
+                return 'info';
+            case TicketStatus.OPEN:
                 return 'success'; // emerald/green
-            case 'in-progress':
+            case TicketStatus.IN_PROGRESS:
                 return 'warn'; // amber
-            case 'closed':
+            case TicketStatus.CLOSED:
                 return 'secondary'; // gray
             default:
                 return 'secondary';
@@ -136,7 +140,7 @@ export class ViewTicket {
     handleCloseTicket() {
         // TODO: Implement close ticket functionality
         console.log('Close ticket clicked for ticket ID:', this.ticketData()?.id);
-        this.store.dispatch(new UpdateTicket(this.ticketData()!.id, { ...this.ticketData()!, status: 'closed' }));
+        this.store.dispatch(new UpdateTicket(this.ticketData()!.id, { ...this.ticketData()!, status: TicketStatus.CLOSED }));
         this.messageService.add({
             severity: 'success',
             summary: 'Success',

@@ -12,7 +12,7 @@ import { TicketStatusTab } from './components/ticket-status-tab';
 import { DeleteTicketDialog } from './components/delete-ticket-dialog';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngxs/store';
-import { Ticket, TicketState } from '@/state/store/ticket/ticket.state';
+import { Ticket, TicketState, TicketStatus } from '@/state/store/ticket/ticket.state';
 import { LoadTickets, RemoveTicket, UpdateTicket } from '@/state/store/ticket/ticket.action';
 import { formatDate, priorityClass, statusClass, statusLabel } from './ticket.utils';
 import { Toast } from 'primeng/toast';
@@ -48,7 +48,7 @@ export class TicketList {
     tickets = this.store.selectSignal(TicketState.tickets);
     loading = this.store.selectSignal(TicketState.loading);
 
-    selectedTab: 'all' | 'open' | 'in-progress' | 'closed' = 'all';
+    selectedTab: TicketStatus | 'all' = 'all';
 
     // filter UI state
     showFilter = false;
@@ -62,7 +62,7 @@ export class TicketList {
     };
 
     get openedCount() {
-        return this.tickets().filter((t) => t.status === 'open').length;
+        return this.tickets().filter((t) => t.status === TicketStatus.OPEN).length;
     }
 
     get totalCount() {
@@ -70,14 +70,14 @@ export class TicketList {
     }
 
     get inProgressCount() {
-        return this.tickets().filter((t) => t.status === 'in-progress').length;
+        return this.tickets().filter((t) => t.status === TicketStatus.IN_PROGRESS).length;
     }
 
     get closedCount() {
-        return this.tickets().filter((t) => t.status === 'closed').length;
+        return this.tickets().filter((t) => t.status === TicketStatus.CLOSED).length;
     }
 
-    selectTab(tab: 'all' | 'open' | 'in-progress' | 'closed') {
+    selectTab(tab: TicketStatus | 'all') {
         this.selectedTab = tab;
     }
 
@@ -122,7 +122,7 @@ export class TicketList {
     }
 
     closeTicket(ticket: Ticket) {
-        this.store.dispatch(new UpdateTicket(ticket.id, { ...ticket, status: 'closed' }));
+        this.store.dispatch(new UpdateTicket(ticket.id, { ...ticket, status: TicketStatus.CLOSED }));
         this.messageService.add({
             severity: 'success',
             summary: 'Success',
@@ -192,8 +192,8 @@ export class TicketList {
                 suggestions.add(ticket.title);
             }
             // Add matching users
-            if (ticket.user.toLowerCase().includes(query)) {
-                suggestions.add(ticket.user);
+            if (ticket.requester?.userName.toLowerCase().includes(query)) {
+                suggestions.add(ticket.requester!.userName);
             }
         });
 
@@ -201,7 +201,7 @@ export class TicketList {
         this.searchSuggestions = Array.from(suggestions)
             .slice(0, 10)
             .map((term) => {
-                const matchingTicket = this.tickets().find((t) => t.id === term || t.title === term || t.user === term);
+                const matchingTicket = this.tickets().find((t) => t.id === term || t.title === term || t.requester?.userName === term);
 
                 return {
                     label: term,
@@ -247,7 +247,7 @@ export class TicketList {
             })
             .filter((t) => {
                 if (!q) return true;
-                return t.id.toLowerCase().includes(q) || t.title.toLowerCase().includes(q) || t.user.toLowerCase().includes(q) || t.priority!.toLowerCase().includes(q) || t.status.toLowerCase().includes(q);
+                return t.id.toLowerCase().includes(q) || t.title.toLowerCase().includes(q) || t.requester?.userName.toLowerCase().includes(q) || t.priority!.toLowerCase().includes(q) || t.status.toLowerCase().includes(q);
             });
 
         // Apply sorting by name when requested
