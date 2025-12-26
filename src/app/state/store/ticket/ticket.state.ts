@@ -89,14 +89,75 @@ interface TicketHistory {
                 description: 'Description 1',
                 updatedDate: new Date(),
                 createdDate: new Date(),
-
                 status: TicketStatus.OPEN,
                 priority: Priority.HIGH,
+                requester: {
+                    id: 'u1',
+                    userName: 'john.doe',
+                    fullName: 'John Doe',
+                    role: 'USER',
+                    createdAt: new Date()
+                },
                 assignee: {
                     id: 'u2',
                     userName: 'user2',
                     fullName: 'User Two',
                     role: 'IT',
+                    createdAt: new Date()
+                }
+            },
+            {
+                id: '2',
+                title: 'Sample Ticket 2',
+                description: 'Description 2',
+                updatedDate: new Date(),
+                createdDate: new Date(),
+                status: TicketStatus.IN_PROGRESS,
+                priority: Priority.MEDIUM,
+                requester: {
+                    id: 'u3',
+                    userName: 'jane.smith',
+                    fullName: 'Jane Smith',
+                    role: 'USER',
+                    createdAt: new Date()
+                },
+                assignee: {
+                    id: 'u2',
+                    userName: 'user2',
+                    fullName: 'User Two',
+                    role: 'IT',
+                    createdAt: new Date()
+                }
+            },
+            {
+                id: '3',
+                title: 'Sample Ticket 3',
+                description: 'Description 3',
+                updatedDate: new Date(),
+                createdDate: new Date(),
+                status: TicketStatus.CLOSED,
+                priority: Priority.LOW,
+                requester: {
+                    id: 'u4',
+                    userName: 'bob.wilson',
+                    fullName: 'Bob Wilson',
+                    role: 'USER',
+                    createdAt: new Date()
+                }
+            },
+            {
+                id: '4',
+                title: 'Sample Ticket 4',
+                description: 'Description 4',
+                updatedDate: new Date(),
+                createdDate: new Date(),
+                status: TicketStatus.OPEN,
+                priority: Priority.URGENT,
+                requester: {
+                    id: 'u5',
+                    userName: 'alice.brown',
+                    fullName: 'Alice Brown',
+                    role: 'USER',
                     createdAt: new Date()
                 }
             }
@@ -117,6 +178,32 @@ interface TicketHistory {
 })
 @Injectable()
 export class TicketState {
+    // Helper function to normalize status from backend format to enum format
+    private normalizeStatus(status: string): TicketStatus {
+        const statusMap: { [key: string]: TicketStatus } = {
+            open: TicketStatus.OPEN,
+            'in-progress': TicketStatus.IN_PROGRESS,
+            closed: TicketStatus.CLOSED,
+            pending: TicketStatus.PENDING,
+            resolved: TicketStatus.RESOLVED
+        };
+        return statusMap[status.toLowerCase()] || (status.toUpperCase().replace('-', '_') as TicketStatus);
+    }
+
+    // Helper function to normalize priority
+    private normalizePriority(priority: string): Priority {
+        return priority.toUpperCase() as Priority;
+    }
+
+    // Transform ticket data from backend format to app format
+    private transformTicket(ticket: any): Ticket {
+        return {
+            ...ticket,
+            status: this.normalizeStatus(ticket.status),
+            priority: ticket.priority ? this.normalizePriority(ticket.priority) : undefined
+        };
+    }
+
     @Selector()
     static loading(state: TicketStateModel) {
         return state.loading;
@@ -137,7 +224,9 @@ export class TicketState {
         ctx.patchState({ loading: true });
         setTimeout(() => {
             const state = ctx.getState();
-            ctx.patchState({ tickets: state.tickets, loading: false });
+            // Transform tickets when loading (simulating API response transformation)
+            const transformedTickets = state.tickets.map((t) => this.transformTicket(t));
+            ctx.patchState({ tickets: transformedTickets, loading: false });
         }, 1000);
     }
     @Action(AddTicket)

@@ -80,17 +80,17 @@
                 <td>{{ ticket.id }}</td>
                 <td>
                     <div class="font-semibold">{{ ticket.title }}</div>
-                    <div class="text-xs text-gray-500">{{ ticket.date }}</div>
+                    <div class="text-xs text-gray-500">{{ formatDate(ticket.createdDate) }}</div>
                 </td>
                 <!-- <td>{{ ticket.category }}</td> -->
                 <!-- <td>{{ formatDate(ticket.createdDate) }}</td>
                             <td>{{ formatDate(ticket.updatedDate) }}</td> -->
-                <td>{{ ticket.user }}</td>
+                <td>{{ ticket.requester?.userName || 'N/A' }}</td>
                 <td>
                     <span class="priority-badge" [ngClass]="priorityClass(ticket.priority)">{{ ticket.priority }}</span>
                 </td>
                 <td>
-                    <span class="status-badge" [ngClass]="{ 'status-open': ticket.status === 'open', 'status-in-progress': ticket.status === 'in-progress', 'status-closed': ticket.status === 'closed' }">{{ statusLabel(ticket.status) }}</span>
+                    <span class="status-badge" [ngClass]="statusClass(ticket.status)">{{ statusLabel(ticket.status) }}</span>
                 </td>
                 <td>
                     <div class="flex items-center gap-2">
