@@ -101,6 +101,7 @@
                         </button>
                         <p-popover #menu>
                             <div class="flex flex-col gap-2">
+                                <button type="button" class="action-btn" (click)="responseTicket(ticket)" pTooltip="Respond to this ticket" tooltipPosition="left">Response Ticket</button>
                                 <button type="button" class="action-btn" (click)="closeTicket(ticket)" pTooltip="Mark ticket as closed" tooltipPosition="left">Close Ticket</button>
                                 <button type="button" class="action-btn" (click)="editTicket(ticket)" pTooltip="Edit ticket details" tooltipPosition="left">Edit Ticket</button>
                                 <button type="button" class="action-btn danger" (click)="deleteTicket(ticket)" pTooltip="Delete this ticket" tooltipPosition="left">Delete</button>

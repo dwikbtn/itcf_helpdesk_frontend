@@ -73,7 +73,7 @@ import { Textarea } from 'primeng/textarea';
                             <label for="assignee" class="block text-sm font-medium mb-2">Assign To</label>
                             <p-select id="assignee" name="assignee" placeholder="Select Assignee" optionLabel="label" optionValue="value" class="w-full" />
                         </div>
-                        <!-- Description -->
+                        <!-- Response -->
                         <div class="mb-4">
                             <label for="description" class="block text-sm font-medium mb-2">response</label>
                             <textarea id="description" pTextarea name="description" rows="5" class="w-full" [disabled]="true"></textarea>

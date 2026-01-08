@@ -136,6 +136,11 @@ export class TicketList {
         this.router.navigate(['/ticket/edit', ticket.id]);
     }
 
+    responseTicket(ticket: Ticket) {
+        // Navigate to ticket response page
+        this.router.navigate(['/ticket/response', ticket.id]);
+    }
+
     deleteTicket(ticket: Ticket) {
         this.ticketToDelete = ticket;
         this.showDeleteModal = true;
